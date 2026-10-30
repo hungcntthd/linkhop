@@ -1,285 +1,165 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <title>Quản trị phòng họp</title>
-  <style>
-    *{box-sizing:border-box} :root{font-family:Arial,Helvetica,sans-serif;color:#19334e;background:#edf4ff}
-    body{margin:0;min-height:100vh;background:linear-gradient(115deg,#e1edff,#f6f9ff 65%)}
-    main{max-width:1020px;margin:0 auto;padding:28px 20px 65px}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-    h1{font-size:clamp(27px,4vw,43px);margin:26px 0 7px;line-height:1.2}
-    h2{margin:0 0 18px;font-size:24px}
-    p{line-height:1.6;color:#526981}
-    a{color:#165bbf}
-    .card{background:#fff;border:1px solid #d6e3f5;border-radius:18px;padding:25px;box-shadow:0 8px 24px #1e477611;margin-top:22px}
-    .muted{color:#5f7288}.hint{font-size:14px}
-    label{display:block;color:#334d68;font-size:14px;font-weight:bold;margin:12px 0 6px}
-    input[type=text],input[type=url],input[type=email],input[type=password]{width:100%;padding:13px 14px;border:1px solid #bfcee0;border-radius:10px;font-size:17px;background:#fff;color:#14324e}
-    input:focus{outline:3px solid #b2d1ff;border-color:#246bea}
-    button{border:0;border-radius:10px;padding:13px 20px;font-weight:700;font-size:16px;cursor:pointer;background:#1d69d2;color:white;min-height:46px}
-    button:hover{filter:brightness(.96)}button:disabled{opacity:.6;cursor:not-allowed}
-    .secondary{background:#e8f1ff;color:#14559a}.danger{background:#ffebed;color:#a32137}
-    .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
-    .room{background:#f7faff;border:1px solid #d9e6f6;border-radius:15px;padding:20px;margin-top:14px}
-    .room-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .room-head h3{margin:0;font-size:19px}
-    .columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .checkline{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:16px}
-    .checkline input{width:22px;height:22px;accent-color:#236bd9}
-    .message{border-radius:10px;padding:12px 16px;line-height:1.45;min-height:24px;margin-top:16px}
-    .message:empty{display:none}.message.error{background:#fff0ef;color:#ab2735;border:1px solid #ffc4c4}
-    .message.success{background:#e8f7ee;color:#176238;border:1px solid #bee7cc}
-    .message.info{background:#edf5ff;color:#1b5d9c;border:1px solid #c5dbf4}
-    .hidden{display:none!important}
-    .tag{display:inline-block;background:#e9f1ff;color:#1d60ab;padding:7px 10px;font-size:13px;font-weight:700;border-radius:8px}
-    .login{max-width:500px}
-    .security{background:#fff8e8;color:#725522;border:1px solid #f2dda2;border-radius:12px;padding:13px 16px;margin-top:20px;font-size:14px;line-height:1.55}
-    @media(max-width:650px){.columns{grid-template-columns:1fr}.card{padding:18px}main{padding:20px 13px}.toolbar button{flex-grow:1}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex,nofollow">
+<title>LinkHop | Quản trị / 管理</title>
+<style>
+  *{box-sizing:border-box}:root{font-family:Arial,"Microsoft YaHei","Noto Sans SC",sans-serif;color:#19334e;background:#edf4ff}
+  body{margin:0;min-height:100vh;background:linear-gradient(120deg,rgba(236,247,255,.87),rgba(250,252,255,.83)),url('./anh-nen-ho-nui.svg') center / cover fixed no-repeat}
+  main{max-width:1060px;margin:0 auto;padding:27px 20px 60px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  h1{font-size:clamp(28px,4vw,40px);margin:20px 0 9px;line-height:1.2}h2{margin:0 0 17px;font-size:24px}
+  p{line-height:1.55;color:#526981}a{color:#165bbf}
+  .card{background:#fffffff3;border:1px solid #d6e3f5;border-radius:18px;padding:25px;box-shadow:0 8px 24px #1e477611;margin-top:22px}
+  label{display:block;color:#334d68;font-size:14px;font-weight:700;margin:13px 0 6px}
+  input[type=text],input[type=url],input[type=email],input[type=password]{width:100%;padding:13px 14px;border:1px solid #bfcee0;border-radius:10px;font-size:17px;background:#fff;color:#14324e}
+  input:focus{outline:3px solid #b2d1ff;border-color:#246bea}
+  button{border:0;border-radius:10px;padding:12px 18px;font-weight:700;font-size:16px;cursor:pointer;background:#1d69d2;color:white;min-height:47px}
+  button:hover{filter:brightness(.96)}button:disabled{opacity:.6;cursor:not-allowed}button:focus-visible,a:focus-visible{outline:3px solid #ffb34d;outline-offset:2px}
+  .secondary{background:#e8f1ff;color:#14559a}.danger{background:#ffebed;color:#a32137}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+  .room{background:#f7faff;border:1px solid #d9e6f6;border-radius:15px;padding:20px;margin-top:14px}
+  .room-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.room-head h3{margin:0;font-size:19px}
+  .columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .checkline{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:16px}.checkline input{width:22px;height:22px;accent-color:#236bd9}
+  .message{border-radius:10px;padding:12px 16px;line-height:1.55;min-height:24px;margin-top:16px;white-space:pre-line}.message:empty{display:none}
+  .message.error{background:#fff0ef;color:#ab2735;border:1px solid #ffc4c4}.message.success{background:#e8f7ee;color:#176238;border:1px solid #bee7cc}.message.info{background:#edf5ff;color:#1b5d9c;border:1px solid #c5dbf4}
+  .hidden{display:none!important}.tag{display:inline-block;background:#e9f1ff;color:#1d60ab;padding:9px 12px;font-size:14px;font-weight:700;border-radius:8px}
+  .login{max-width:580px}.security{background:#fff8e8;color:#725522;border:1px solid #f2dda2;border-radius:12px;padding:15px 16px;margin-top:22px;font-size:14px;line-height:1.6}
+  .switcher{display:flex;background:#fff;border:1px solid #cddff6;border-radius:12px;padding:4px;gap:3px;flex-wrap:wrap}
+  .lang-btn{background:transparent;color:#315a85;border-radius:8px;min-height:40px;font-size:14px;padding:8px 11px}
+  .lang-btn[aria-pressed=true]{background:#246cdf;color:white}
+  .bi .zh{display:block;font-size:.87em;line-height:1.37;margin-top:2px}
+  .bi .vi{display:block}
+  .group-label{margin:18px 0 4px;color:#275a9c;font-weight:700}
+  .hint{font-size:14px}
+  @media(max-width:700px){.columns{grid-template-columns:1fr}.card{padding:17px}main{padding:18px 12px}.toolbar button{flex-grow:1}}
+</style>
 </head>
 <body>
-<main>
+<main id="app" class="bi">
   <div class="top">
-    <span class="tag">QUẢN TRỊ PHÒNG HỌP</span>
-    <a href="./index.html">← Xem trang phòng họp</a>
+    <a href="./index.html" data-i18n="back"></a>
+    <div class="tag">Tiếng Việt / 简体中文</div>
   </div>
-  <h1>Quản lý đường link cuộc họp</h1>
-  <p>Dán đường dẫn, bật phòng và nhấn <strong>Lưu thay đổi</strong>. Người dùng trên Smart TV sẽ nhìn thấy link mới trong khoảng 30 giây (khi kết nối mạng ổn định).</p>
+  <div class="tag" data-i18n="badge"></div>
+  <h1 data-i18n="heading"></h1>
+  <p data-i18n="intro"></p>
   <div id="global-message" class="message" role="status" aria-live="polite"></div>
-
-  <section id="setup" class="card hidden">
-    <h2>Cần kết nối Firebase</h2>
-    <p>Website chưa có cấu hình Firebase hợp lệ. Quản trị viên IT hãy điền <code>firebase-config.js</code>, thiết lập Authentication và Realtime Database Rules theo file <code>HUONG_DAN_CAI_DAT.md</code>, sau đó tải các file lên GitHub.</p>
-  </section>
-
+  <section id="setup" class="card hidden"><h2 data-i18n="noConfig"></h2><p data-i18n="setupInfo"></p></section>
   <section id="login" class="card login hidden">
-    <h2>Đăng nhập quản trị</h2>
+    <h2 data-i18n="login"></h2>
     <form id="login-form">
-      <label for="email">Email quản trị</label>
+      <label for="email" data-i18n="email"></label>
       <input id="email" type="email" autocomplete="username" required placeholder="admin@congty.vn">
-      <label for="password">Mật khẩu</label>
-      <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mật khẩu Firebase Authentication">
-      <div class="toolbar"><button id="sign-in" type="submit">Đăng nhập</button></div>
+      <label for="password" data-i18n="password"></label>
+      <input id="password" type="password" autocomplete="current-password" minlength="6" required>
+      <div class="toolbar"><button id="sign-in" type="submit" data-i18n="loginBtn"></button></div>
     </form>
-    <p class="hint">Tài khoản được tạo trong Firebase Authentication bởi người quản lý hệ thống. Không dùng mật khẩu GitHub tại đây.</p>
+    <p class="hint" data-i18n="loginInfo"></p>
   </section>
-
   <section id="editor" class="card hidden">
-    <div class="top"><h2 style="margin:0">Danh sách phòng họp</h2><button class="secondary" id="logout" type="button">Đăng xuất</button></div>
+    <div class="top"><h2 data-i18n="rooms"></h2><button class="secondary" id="logout" type="button" data-i18n="logout"></button></div>
     <p class="hint" id="session-info"></p>
     <div id="room-list"></div>
     <div class="toolbar">
-      <button type="button" id="add-room" class="secondary">+ Thêm phòng họp</button>
-      <button type="button" id="reload" class="secondary">↻ Tải lại dữ liệu</button>
-      <button type="button" id="save">✓ Lưu thay đổi</button>
+      <button class="secondary" id="add-room" type="button" data-i18n="addRoom"></button>
+      <button class="secondary" id="reload" type="button" data-i18n="reload"></button>
+      <button id="save" type="button" data-i18n="save"></button>
     </div>
-    <p class="hint">Nếu sửa nhiều phòng, nhấn <strong>Lưu thay đổi</strong> một lần. Bấm <strong>Tải lại dữ liệu</strong> sẽ hủy những chỉnh sửa chưa lưu trên trang này.</p>
+    <p class="hint" data-i18n="saveHint"></p>
   </section>
-
-  <div class="security"><strong>Lưu ý bảo mật:</strong> Danh sách đường dẫn hiển thị công khai để Smart TV mở không cần đăng nhập. Không nhập mật khẩu, token hoặc link cuộc họp bí mật vào hệ thống này. Việc đăng nhập quản trị chỉ giới hạn quyền <strong>chỉnh sửa</strong>, không giới hạn quyền <strong>xem link</strong>.</div>
+  <div class="security" data-i18n="security"></div>
 </main>
-
 <script src="./firebase-config.js"></script>
-<!-- SDK chỉ dùng ở trang quản trị trên PC; trang TV không cần tải SDK này. -->
 <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-database-compat.js"></script>
 <script>
-(function () {
+(function(){
   'use strict';
-  var config = window.PHONGHOP_FIREBASE || {};
-  var ui = function (id) { return document.getElementById(id); };
-  var db, auth;
-  var rows = [];
-  var store = null;
-  var inProgress = false;
-  var demo = [
-    { id: 'phong-1', name: 'PHÒNG HỌP 01', description: 'Cuộc họp chung', url: '', enabled: false, order: 1 },
-    { id: 'phong-2', name: 'PHÒNG HỌP 02', description: 'Cuộc họp bộ phận', url: '', enabled: false, order: 2 },
-    { id: 'phong-3', name: 'PHÒNG HỌP 03', description: 'Họp trực tuyến', url: '', enabled: false, order: 3 },
-    { id: 'phong-4', name: 'PHÒNG HỌP 04', description: 'Họp với đối tác', url: '', enabled: false, order: 4 }
+  var dict={
+    back:['← Xem trang phòng họp','← 查看会议室页面'],badge:['QUẢN TRỊ PHÒNG HỌP','会议室管理'],
+    heading:['Quản lý đường link cuộc họp','管理会议链接'],
+    intro:['Dán link, chọn Bật phòng và nhấn Lưu thay đổi. Trang Smart TV kiểm tra dữ liệu mới mỗi 30 giây.','粘贴会议链接，启用会议室后点击“保存更改”。智能电视页面每30秒检查一次更新。'],
+    noConfig:['Cần kết nối Firebase','需要连接 Firebase'],
+    setupInfo:['Thiếu cấu hình Firebase hoặc chưa tải được SDK. Kiểm tra firebase-config.js và kết nối Internet.','缺少 Firebase 配置或 SDK 加载失败。请检查 firebase-config.js 和网络连接。'],
+    login:['Đăng nhập quản trị','管理员登录'],email:['Email quản trị','管理员邮箱'],password:['Mật khẩu','密码'],loginBtn:['Đăng nhập','登录'],
+    loginInfo:['Sử dụng tài khoản trong Firebase Authentication, không sử dụng mật khẩu GitHub.','使用 Firebase Authentication 账户，不要使用 GitHub 密码。'],
+    rooms:['Danh sách phòng họp','会议室列表'],logout:['Đăng xuất','退出登录'],addRoom:['+ Thêm phòng họp','+ 添加会议室'],
+    reload:['↻ Tải lại dữ liệu','↻ 重新加载'],save:['✓ Lưu thay đổi','✓ 保存更改'],
+    saveHint:['Chỉnh sửa nhiều phòng rồi nhấn Lưu thay đổi một lần. Tải lại dữ liệu sẽ bỏ các sửa đổi chưa lưu.','可编辑多个会议室后统一保存。重新加载将丢失未保存的修改。'],
+    security:['Bảo mật: Link họp trong danh sách công khai có thể bị người ngoài xem. Không lưu mật khẩu hoặc token bí mật. Chỉ tài khoản có UID được cấp quyền trong Firebase Rules mới được ghi dữ liệu.','安全提示：公开列表中的会议链接可能被外部人员查看。请勿存储密码或秘密令牌。只有 Firebase 规则中授权 UID 的账户才能修改数据。'],
+    room:['Phòng','会议室'],delete:['Xóa phòng','删除会议室'],nameVi:['Tên phòng (tiếng Việt)','会议室名称（越南语）'],nameZh:['Tên phòng (tiếng Trung)','会议室名称（中文）'],
+    descVi:['Mô tả (tiếng Việt)','说明（越南语）'],descZh:['Mô tả (tiếng Trung)','说明（中文）'],
+    url:['Link họp (https://...)','会议链接（https://...）'],enabled:['Bật phòng — cho phép tham gia','启用会议室 — 允许加入'],
+    noRooms:['Chưa có phòng họp. Nhấn Thêm phòng họp.','暂无会议室，请点击“添加会议室”。'],
+    confirmDelete:['Xóa phòng này khỏi danh sách (chưa lưu)?','从列表中删除该会议室（尚未保存）？'],
+    confirmReload:['Tải lại dữ liệu? Các thay đổi chưa lưu sẽ bị mất.','重新加载数据？未保存的更改将丢失。'],
+    loaded:['Đã tải danh sách phòng họp từ Firebase.','已从 Firebase 加载会议室列表。'],
+    initial:['Chưa có dữ liệu. Đã chuẩn bị 4 phòng mẫu; nhấn Lưu thay đổi để khởi tạo.','数据库尚无数据。已准备4个示例会议室，点击“保存更改”即可创建。'],
+    saved:['Đã lưu thành công. Trang TV sẽ nhận cập nhật khi tải lại dữ liệu.','保存成功。电视页面将在下次刷新数据时获取更新。'],
+    authWaiting:['Đang kiểm tra tài khoản...','正在验证账户…'],
+    loggedOut:['Đăng nhập để cập nhật link cuộc họp.','请登录后修改会议链接。'],
+    loginFailed:['Đăng nhập thất bại: ','登录失败：'],
+    loadFailed:['Không tải được danh sách: ','加载列表失败：'],
+    saveFailed:['Không lưu được: ','保存失败：'],
+    noRoomToSave:['Cần có ít nhất một phòng họp.','至少需要一个会议室。'],
+    invalidName:['Tên hoặc mô tả phòng không hợp lệ: ','会议室名称或说明无效：'],
+    invalidUrl:['Link phòng phải bắt đầu bằng https://, không chứa khoảng trắng: ','链接必须以 https:// 开头且不能有空格：'],
+    enabledNoUrl:['Đã bật phòng nhưng chưa có link hợp lệ: ','会议室已启用但链接无效：'],
+    uidNote:['Đăng nhập: ','已登录：'],
+    wrongCred:['Email hoặc mật khẩu không đúng.','邮箱或密码错误。'],invalidEmail:['Email không hợp lệ.','邮箱格式无效。'],
+    tooMany:['Đăng nhập quá nhiều lần. Hãy thử lại sau.','登录尝试次数过多，请稍后重试。'],
+    denied:['Firebase từ chối quyền. Hãy kiểm tra UID và Database Rules.','Firebase 拒绝访问，请检查 UID 和数据库规则。'],
+    noSDK:['Không tải được Firebase SDK. Kiểm tra mạng hoặc chặn CDN.','无法加载 Firebase SDK，请检查网络或 CDN 访问。'],
+    noFB:['Chưa có cấu hình Firebase hợp lệ.','尚未配置有效的 Firebase。']
+  };
+  var ui=function(id){return document.getElementById(id);},app=ui('app');var mode='bi',config=window.PHONGHOP_FIREBASE||{};
+  var db,auth,store,rows=[],busy=false,lastMsg=null;
+  var demo=[
+    {id:'phong-1',name:'PHÒNG HỌP 01',nameZh:'会议室 01',description:'Cuộc họp chung',descriptionZh:'综合会议',url:'',enabled:false,order:1},
+    {id:'phong-2',name:'PHÒNG HỌP 02',nameZh:'会议室 02',description:'Cuộc họp bộ phận',descriptionZh:'部门会议',url:'',enabled:false,order:2},
+    {id:'phong-3',name:'PHÒNG HỌP 03',nameZh:'会议室 03',description:'Họp trực tuyến',descriptionZh:'线上会议',url:'',enabled:false,order:3},
+    {id:'phong-4',name:'PHÒNG HỌP 04',nameZh:'会议室 04',description:'Họp với đối tác',descriptionZh:'合作伙伴会议',url:'',enabled:false,order:4}
   ];
 
-  function show(id) { ui(id).classList.remove('hidden'); }
-  function hide(id) { ui(id).classList.add('hidden'); }
-  function message(msg, kind) {
-    var el = ui('global-message');
-    el.textContent = msg || '';
-    el.className = 'message ' + (kind || 'info');
-  }
-  function validUrl(value) {
-    // Chỉ chấp nhận HTTPS trong môi trường Internet.
-    return /^https:\/\/[a-zA-Z0-9][^\s]*$/.test(value);
-  }
-  function errorText(error) {
-    if (!error) return 'Đã xảy ra lỗi.';
-    var code = error.code || '';
-    if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email hoặc mật khẩu không đúng.';
-    if (code === 'auth/invalid-email') return 'Email không hợp lệ.';
-    if (code === 'auth/too-many-requests') return 'Đăng nhập quá nhiều lần. Hãy thử lại sau.';
-    if (code === 'PERMISSION_DENIED') return 'Firebase từ chối thao tác. Kiểm tra UID quản trị và Rules của Realtime Database.';
-    return error.message || String(error);
-  }
-  function el(tag, className, content) {
-    var node = document.createElement(tag);
-    if (className) node.className = className;
-    if (content !== undefined) node.textContent = content;
-    return node;
-  }
-  function field(container, labelText, name, val, type) {
-    var wrapper = el('div');
-    var label = el('label', '', labelText);
-    var input = el('input');
-    input.type = type || 'text';
-    input.value = val || '';
-    input.setAttribute('data-field', name);
-    input.maxLength = name === 'url' ? 2048 : name === 'description' ? 250 : 100;
-    wrapper.appendChild(label);
-    wrapper.appendChild(input);
-    container.appendChild(wrapper);
-    return input;
-  }
-  function render() {
-    var list = ui('room-list');
-    list.textContent = '';
-    if (!rows.length) list.appendChild(el('p', 'muted', 'Chưa có phòng họp. Nhấn “Thêm phòng họp”.'));
-    rows.forEach(function (room, index) {
-      var item = el('div', 'room');
-      item.setAttribute('data-room-id', room.id);
-      var head = el('div', 'room-head');
-      head.appendChild(el('h3', '', 'Phòng ' + (index + 1)));
-      var remove = el('button', 'danger', 'Xóa phòng');
-      remove.type = 'button';
-      remove.onclick = function () {
-        if (confirm('Xóa phòng này khỏi danh sách (chưa lưu)?')) {
-          syncInputs();
-          rows = rows.filter(function (item) { return item.id !== room.id; });
-          render();
-        }
-      };
-      head.appendChild(remove);
-      item.appendChild(head);
-      var cols = el('div', 'columns');
-      field(cols, 'Tên phòng họp', 'name', room.name);
-      field(cols, 'Mô tả', 'description', room.description);
-      item.appendChild(cols);
-      field(item, 'Link họp (bắt đầu bằng https://)', 'url', room.url, 'url');
-      var wrapper = el('label', 'checkline');
-      var toggle = el('input');
-      toggle.type = 'checkbox';
-      toggle.checked = room.enabled === true;
-      toggle.setAttribute('data-field', 'enabled');
-      wrapper.appendChild(toggle);
-      wrapper.appendChild(el('span', '', 'Bật phòng — cho phép người dùng nhấp để tham gia'));
-      item.appendChild(wrapper);
-      list.appendChild(item);
-    });
-  }
-  function syncInputs() {
-    var entries = ui('room-list').querySelectorAll('[data-room-id]');
-    entries.forEach(function (node) {
-      var id = node.getAttribute('data-room-id');
-      var room = rows.find(function (r) { return r.id === id; });
-      if (!room) return;
-      ['name', 'description', 'url'].forEach(function (key) {
-        room[key] = node.querySelector('[data-field="' + key + '"]').value.trim();
-      });
-      room.enabled = node.querySelector('[data-field="enabled"]').checked;
-    });
-  }
-  function setBusy(busy) {
-    inProgress = busy;
-    ['save', 'add-room', 'reload'].forEach(function (id) { ui(id).disabled = busy; });
-  }
-  async function loadData() {
-    setBusy(true);
-    try {
-      var snap = await store.once('value');
-      var data = snap.val();
-      if (data && typeof data === 'object') {
-        rows = Object.keys(data).map(function (key) {
-          var r = data[key] || {};
-          return { id: key, name: String(r.name || ''), description: String(r.description || ''), url: String(r.url || ''), enabled: r.enabled === true, order: Number(r.order) || 0 };
-        }).sort(function (a, b) { return a.order - b.order; });
-        message('Đã tải ' + rows.length + ' phòng họp từ Firebase.', 'success');
-      } else {
-        rows = demo.map(function (x) { return Object.assign({}, x); });
-        message('Cơ sở dữ liệu chưa có phòng. Đã điền sẵn 4 phòng mẫu; nhấn Lưu thay đổi để tạo chúng.', 'info');
-      }
-      render();
-    } catch (err) { message('Không thể tải danh sách: ' + errorText(err), 'error'); }
-    finally { setBusy(false); }
-  }
-  function nextId() {
-    return 'phong-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 100000).toString(36);
-  }
-  ui('add-room').onclick = function () {
-    if (inProgress) return;
-    syncInputs();
-    rows.push({ id: nextId(), name: 'PHÒNG HỌP ' + String(rows.length + 1).padStart(2, '0'), description: '', url: '', enabled: false, order: rows.length + 1 });
-    render();
-    window.scrollTo(0, document.body.scrollHeight);
-  };
-  ui('reload').onclick = function () {
-    if (!inProgress && confirm('Tải lại dữ liệu? Các thay đổi chưa lưu sẽ bị mất.')) loadData();
-  };
-  ui('save').onclick = async function () {
-    if (inProgress) return;
-    syncInputs();
-    if (!rows.length) { message('Cần có ít nhất 1 phòng họp.', 'error'); return; }
-    var payload = {};
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
-      if (!r.name || r.name.length > 100 || r.description.length > 250) { message('Tên hoặc mô tả phòng ' + (i + 1) + ' không hợp lệ.', 'error'); return; }
-      if (r.url && !validUrl(r.url)) { message('Link của phòng ' + (i + 1) + ' phải bắt đầu bằng https:// và không có dấu cách.', 'error'); return; }
-      if (r.enabled && !validUrl(r.url)) { message('Phòng ' + (i + 1) + ' đã bật nhưng chưa có link HTTPS hợp lệ.', 'error'); return; }
-      payload[r.id] = { name: r.name, description: r.description, url: r.url, enabled: r.enabled, order: i + 1 };
-    }
-    setBusy(true);
-    try {
-      await store.set(payload);
-      message('Đã lưu thành công ' + rows.length + ' phòng. Website công khai sẽ cập nhật trong khoảng 30 giây.', 'success');
-    } catch (err) { message('Không lưu được: ' + errorText(err), 'error'); }
-    finally { setBusy(false); }
-  };
-  ui('logout').onclick = function () { auth.signOut(); };
-  ui('login-form').onsubmit = async function (e) {
-    e.preventDefault();
-    var btn = ui('sign-in');
-    btn.disabled = true;
-    message('Đang kiểm tra tài khoản...', 'info');
-    try {
-      await auth.signInWithEmailAndPassword(ui('email').value.trim(), ui('password').value);
-      ui('password').value = '';
-    } catch (err) { message('Đăng nhập thất bại: ' + errorText(err), 'error'); }
-    finally { btn.disabled = false; }
-  };
+  function tr(key){var a=dict[key]||['',''];return mode==='zh'?a[1]:mode==='vi'?a[0]:a[0]+' / '+a[1];}
+  function localContent(node,vi,zh){node.textContent='';if(mode==='bi'&&zh){var a=document.createElement('span'),b=document.createElement('span');a.className='vi';a.lang='vi';a.textContent=vi;b.className='zh';b.lang='zh-Hans';b.textContent=zh;node.appendChild(a);node.appendChild(b);}else{node.textContent=mode==='zh'&&zh?zh:vi;}}
+  function label(node,key){localContent(node,dict[key][0],dict[key][1]);}
+  function el(tag,cls,content){var n=document.createElement(tag);if(cls)n.className=cls;if(content!==undefined)n.textContent=content;return n;}
+  function show(id){ui(id).classList.remove('hidden');}function hide(id){ui(id).classList.add('hidden');}
+  function message(v,zh,kind){lastMsg=[v||'',zh||'',kind||'info'];var m=ui('global-message');localContent(m,v,zh);m.className='message '+(kind||'info');}
+  function setStatic(){document.documentElement.lang=mode==='zh'?'zh-Hans':'vi';app.classList.toggle('bi',mode==='bi');document.querySelectorAll('[data-i18n]').forEach(function(n){label(n,n.dataset.i18n);});if(lastMsg)message.apply(null,lastMsg);render();}
+  function warn(key,kind,extra){message(dict[key][0]+(extra||''),dict[key][1]+(extra||''),kind||'info');}
+  function errorStrings(e){var code=e&&e.code||'';var key=(code==='auth/invalid-credential'||code==='auth/wrong-password'||code==='auth/user-not-found')?'wrongCred':code==='auth/invalid-email'?'invalidEmail':code==='auth/too-many-requests'?'tooMany':code==='PERMISSION_DENIED'?'denied':null;return key?dict[key]:[(e&&e.message)||String(e),(e&&e.message)||String(e)];}
+  function field(target,k,val,kind){var wrap=el('div'),lab=el('label');label(lab,k==='name'?'nameVi':k==='nameZh'?'nameZh':k==='description'?'descVi':k==='descriptionZh'?'descZh':'url');var inp=el('input');inp.type=kind||'text';inp.value=val||'';inp.setAttribute('data-field',k);inp.maxLength=k==='url'?2048:k.indexOf('description')===0?250:100;wrap.appendChild(lab);wrap.appendChild(inp);target.appendChild(wrap);return inp;}
+  function render(){var list=ui('room-list');list.textContent='';if(!rows.length){var none=el('p');label(none,'noRooms');list.appendChild(none);}rows.forEach(function(r,i){var item=el('div','room');item.setAttribute('data-room-id',r.id);var head=el('div','room-head');var heading=el('h3');localContent(heading,'Phòng '+(i+1),'会议室 '+(i+1));head.appendChild(heading);
+      var del=el('button','danger');del.type='button';label(del,'delete');del.addEventListener('click',function(){if(window.confirm(tr('confirmDelete'))){syncInputs();rows=rows.filter(function(v){return v.id!==r.id;});render();}});head.appendChild(del);item.appendChild(head);
+      var cols=el('div','columns');field(cols,'name',r.name);field(cols,'nameZh',r.nameZh);field(cols,'description',r.description);field(cols,'descriptionZh',r.descriptionZh);item.appendChild(cols);
+      field(item,'url',r.url,'url');var on=el('label','checkline'),check=el('input');check.type='checkbox';check.checked=r.enabled===true;check.setAttribute('data-field','enabled');on.appendChild(check);var caption=el('span');label(caption,'enabled');on.appendChild(caption);item.appendChild(on);list.appendChild(item);
+    });}
+  function syncInputs(){ui('room-list').querySelectorAll('[data-room-id]').forEach(function(node){var id=node.getAttribute('data-room-id'),r=rows.find(function(x){return x.id===id;});if(!r)return;['name','nameZh','description','descriptionZh','url'].forEach(function(key){r[key]=node.querySelector('[data-field="'+key+'"]').value.trim();});r.enabled=node.querySelector('[data-field="enabled"]').checked;});}
+  function setBusy(v){busy=v;['save','reload','add-room'].forEach(function(id){ui(id).disabled=v;});}
+  function validUrl(s){if(typeof s!=='string'||!/^(https:\/\/)[^\s]+$/i.test(s))return false;try{var u=new URL(s);return u.protocol==='https:'&&!!u.hostname;}catch(e){return false;}}
+  async function load(){setBusy(true);try{var snap=await store.once('value'),data=snap.val();if(data&&typeof data==='object'){rows=Object.keys(data).map(function(k){var r=data[k]||{};return {id:k,name:String(r.name||''),nameZh:String(r.nameZh||''),description:String(r.description||''),descriptionZh:String(r.descriptionZh||''),url:String(r.url||''),enabled:r.enabled===true,order:Number(r.order)||0};}).sort(function(a,b){return a.order-b.order;});warn('loaded','success');}else{rows=demo.map(function(r){return Object.assign({},r);});warn('initial','info');}render();}catch(e){var err=errorStrings(e);message(dict.loadFailed[0]+err[0],dict.loadFailed[1]+err[1],'error');}finally{setBusy(false);}}
+  function nextId(){return 'phong-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*100000).toString(36);}
+  ui('add-room').addEventListener('click',function(){if(busy)return;syncInputs();var n=rows.length+1;rows.push({id:nextId(),name:'PHÒNG HỌP '+String(n).padStart(2,'0'),nameZh:'会议室 '+String(n).padStart(2,'0'),description:'',descriptionZh:'',url:'',enabled:false,order:n});render();window.scrollTo(0,document.body.scrollHeight);});
+  ui('reload').addEventListener('click',function(){if(!busy&&window.confirm(tr('confirmReload')))load();});
+  ui('save').addEventListener('click',async function(){if(busy)return;syncInputs();if(!rows.length){warn('noRoomToSave','error');return;}var payload={};for(var i=0;i<rows.length;i++){var r=rows[i];if(!r.name||r.name.length>100||r.nameZh.length>100||r.description.length>250||r.descriptionZh.length>250){warn('invalidName','error',String(i+1));return;}if(r.url&&!validUrl(r.url)){warn('invalidUrl','error',String(i+1));return;}if(r.enabled&&!validUrl(r.url)){warn('enabledNoUrl','error',String(i+1));return;}payload[r.id]={name:r.name,description:r.description,url:r.url,enabled:r.enabled,order:i+1};if(r.nameZh)payload[r.id].nameZh=r.nameZh;if(r.descriptionZh)payload[r.id].descriptionZh=r.descriptionZh;}
+    setBusy(true);try{await store.set(payload);warn('saved','success');}catch(e){var err=errorStrings(e);message(dict.saveFailed[0]+err[0],dict.saveFailed[1]+err[1],'error');}finally{setBusy(false);}
+  });
+  ui('logout').addEventListener('click',function(){if(auth)auth.signOut();});
+  ui('login-form').addEventListener('submit',async function(e){e.preventDefault();var btn=ui('sign-in');btn.disabled=true;warn('authWaiting','info');try{await auth.signInWithEmailAndPassword(ui('email').value.trim(),ui('password').value);ui('password').value='';}catch(err){var a=errorStrings(err);message(dict.loginFailed[0]+a[0],dict.loginFailed[1]+a[1],'error');}finally{btn.disabled=false;}});
 
-  var configured = typeof config.apiKey === 'string' && config.apiKey.indexOf('THAY_') === -1
-    && typeof config.databaseURL === 'string' && /^https:\/\//.test(config.databaseURL)
-    && config.databaseURL.indexOf('THAY_') === -1;
-  if (!configured) { show('setup'); message('Chưa cấu hình Firebase. Trang người dùng vẫn chạy từ rooms.json theo cách cũ.', 'info'); return; }
-  if (!window.firebase) { show('setup'); message('Không tải được Firebase SDK. Kiểm tra kết nối Internet hoặc chính sách chặn CDN.', 'error'); return; }
-  try {
-    firebase.initializeApp({ apiKey: config.apiKey, authDomain: config.authDomain, databaseURL: config.databaseURL,
-      projectId: config.projectId, appId: config.appId });
-    auth = firebase.auth();
-    db = firebase.database();
-    store = db.ref('rooms');
-    auth.onAuthStateChanged(function (user) {
-      if (user) {
-        hide('login'); show('editor');
-        ui('session-info').textContent = 'Đăng nhập: ' + (user.email || user.uid) + ' · Chỉ UID được ghi trong Database Rules mới được phép lưu dữ liệu.';
-        loadData();
-      } else {
-        show('login'); hide('editor');
-        message('Đăng nhập để cập nhật link cuộc họp.', 'info');
-      }
-    });
-  } catch (err) { show('setup'); message('Cấu hình Firebase không hợp lệ: ' + errorText(err), 'error'); }
+  setStatic();
+  var validConfig=typeof config.apiKey==='string'&&config.apiKey.indexOf('THAY_')<0&&typeof config.databaseURL==='string'&&/^https:\/\//.test(config.databaseURL)&&config.databaseURL.indexOf('THAY_')<0;
+  if(!validConfig){show('setup');warn('noFB','error');return;}
+  if(!window.firebase){show('setup');warn('noSDK','error');return;}
+  try{firebase.initializeApp({apiKey:config.apiKey,authDomain:config.authDomain,databaseURL:config.databaseURL,projectId:config.projectId,appId:config.appId});auth=firebase.auth();db=firebase.database();store=db.ref('rooms');auth.onAuthStateChanged(function(user){if(user){hide('login');show('editor');ui('session-info').textContent=tr('uidNote')+(user.email||user.uid);load();}else{hide('editor');show('login');warn('loggedOut','info');}});}catch(e){show('setup');var p=errorStrings(e);message(p[0],p[1],'error');}
 }());
 </script>
 </body>

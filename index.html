@@ -1,219 +1,145 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="robots" content="noindex, nofollow">
-  <title>Cổng truy cập cuộc họp</title>
-  <style>
-    :root { font-family: Arial, Helvetica, sans-serif; color: #15304c; background: #eef4fb; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 20% 0%, #e0edff, transparent 52%), #f3f7fc; }
-    .shell { max-width: 1160px; margin: 0 auto; padding: 48px 28px 50px; }
-    header { text-align: center; padding: 16px 12px 20px; }
-    .brand { display: inline-flex; gap: 10px; align-items: center; color: #2462a9; letter-spacing: .15em; font-size: 16px; font-weight: 800; }
-    .brand-dot { display: inline-block; width: 14px; height: 14px; background: #2b78ed; border-radius: 50%; box-shadow: 0 0 0 6px #deebfc; }
-    h1 { font-size: clamp(30px, 4.3vw, 54px); line-height: 1.13; margin: 22px 0 14px; letter-spacing: -.025em; }
-    .lead { max-width: 740px; margin: 0 auto; color: #58708a; font-size: clamp(18px, 2.1vw, 24px); line-height: 1.6; }
-    .bar { background: #fff; border: 1px solid #dbe6f5; border-radius: 16px; padding: 16px 22px; box-shadow: 0 5px 16px #2047760a; margin: 25px 0 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
-    .bar-label { font-weight: 700; font-size: 18px; }
-    .status { font-size: 15px; color: #617791; }
-    .status.error { color: #b13737; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-    .room { display: flex; flex-direction: column; gap: 12px; min-height: 208px; padding: 28px 30px; background: #fff; border: 2px solid #dbe8f8; border-radius: 22px; text-decoration: none; color: inherit; box-shadow: 0 9px 24px #174c8812; transition: transform .16s, box-shadow .16s, border-color .16s; }
-    .room.available:hover { border-color: #b7d1f7; box-shadow: 0 12px 25px #174c8819; }
-    .room-actions { margin-top: auto; padding-left: 74px; display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
-    .action-btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; flex: 1 1 170px; min-height: 58px; padding: 12px 17px; border-radius: 13px; font-size: 18px; font-weight: 800; text-decoration: none; text-align: center; cursor: pointer; line-height: 1.3; }
-    .join-btn { border: 2px solid #1d69d9; background: #1d69d9; color: #fff; }
-    .join-btn:hover { background: #1256be; }
-    .copy-btn { border: 2px solid #b4d1f6; background: #f1f7ff; color: #1258b2; }
-    .copy-btn:hover { background: #e2efff; }
-    .action-btn:focus-visible { outline: 4px solid #fdac36; outline-offset: 3px; }
-    .copy-btn.copied { border-color: #68ba88; background: #e8f7ed; color: #17653b; }
-    .copy-hint { font-size: 15px; color: #617791; margin: 3px 0 0 74px; }
-    .room-header { display: flex; align-items: center; gap: 16px; }
-    .room-icon { display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 58px; height: 58px; border-radius: 15px; color: #fff; font-size: 29px; background: #2073e9; }
-    .room-name { margin: 0; font-size: clamp(22px, 2.5vw, 30px); line-height: 1.22; font-weight: 800; overflow-wrap: anywhere; }
-    .room-desc { margin: 0; padding-left: 74px; color: #62748a; font-size: 18px; line-height: 1.45; }
-    .room-action { margin-top: auto; padding-left: 74px; font-size: 19px; font-weight: 800; color: #65778b; }
-    .room.disabled { opacity: .7; background: #f8fafc; box-shadow: none; }
-    .room.disabled .room-icon { background: #8799ac; }
-    .empty { text-align:center; padding: 55px 20px; background:#fff; border-radius:20px; color:#65778b; font-size: 20px; grid-column:1/-1; }
-    .admin-link { color: #2462a9; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
-    .note { margin: 28px 0 0; text-align: center; color: #5b7087; line-height: 1.7; font-size: 17px; }
-    footer { margin-top: 44px; font-size: 14px; text-align:center; color:#7b8da1; }
-    @media (max-width: 670px) { .shell { padding: 24px 14px 35px; } .grid { grid-template-columns: 1fr; gap: 14px; } .room { min-height: 175px; padding: 21px; } .room-desc, .room-action, .room-actions, .copy-hint { padding-left: 0; margin-left: 0; } .bar { flex-direction: column; text-align:center; } }
-    @media (min-width: 671px) and (max-width: 1000px) { .room-actions { padding-left: 0; } .action-btn { font-size: 16px; } }
-    @media (prefers-reduced-motion: reduce) { .room { transition: none; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex,nofollow">
+<title>LinkHop | Phòng họp / 会议室</title>
+<style>
+  *{box-sizing:border-box}
+  :root{font-family:Arial,"Microsoft YaHei","Noto Sans SC",sans-serif;color:#15304c;background:#eef4fb}
+  body{margin:0;min-height:100vh;background:linear-gradient(180deg,rgba(235,246,255,.27),rgba(225,242,253,.55)),url('./anh-nen-ho-nui.svg') center / cover no-repeat;background-color:#bdddec}
+  .shell{max-width:1580px;margin:0 auto;padding:24px 26px 48px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .topbrand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:900;color:#123e77;letter-spacing:.015em}
+  .topbrand-icon{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:#2576ee;color:#fff;font-size:28px;box-shadow:0 7px 18px #236ac044}
+  .topbrand-sub{font-size:13px;color:#36597d;font-weight:700}
+  .topdate{text-align:right;font-size:15px;color:#22476e;font-weight:700;line-height:1.6}
+  .topdate strong{font-size:28px;color:#132d4d;margin-left:15px}
+  .switcher{display:flex;background:#fff;border:1px solid #cddff6;border-radius:12px;padding:5px;gap:4px;box-shadow:0 3px 12px #174c8810}
+  .lang-btn{min-height:43px;background:transparent;border:0;border-radius:8px;padding:8px 12px;color:#315a85;font-size:15px;font-weight:700;cursor:pointer}
+  .lang-btn[aria-pressed="true"]{background:#246cdf;color:#fff}
+  .lang-btn:focus-visible,.action-btn:focus-visible,a:focus-visible{outline:4px solid #ffb34d;outline-offset:3px}
+  header{text-align:center;padding:19px 12px 17px}
+  .brand{display:inline-flex;gap:11px;align-items:center;color:#2462a9;letter-spacing:.05em;font-size:17px;font-weight:800}
+  .brand-dot{display:inline-block;width:14px;height:14px;background:#2b78ed;border-radius:50%;box-shadow:0 0 0 6px #deebfc}
+  h1{font-size:clamp(31px,3.5vw,52px);line-height:1.15;margin:15px 0 8px;color:#112844;text-shadow:0 1px 1px #ffffff77}
+  .lead{max-width:900px;margin:0 auto;color:#274b6e;font-size:clamp(16px,1.5vw,20px);line-height:1.45}
+  .bi .zh{display:block;font-size:.84em;font-weight:inherit;line-height:1.35;margin-top:3px}
+  .bi .vi{display:block}
+  .bar{background:#fffffff0;border:1px solid #dbe6f5;border-radius:16px;padding:16px 22px;box-shadow:0 5px 16px #2047760a;margin:24px 0 26px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .bar-label{font-weight:700;font-size:18px}.status{font-size:15px;color:#617791;text-align:right}.status.error{color:#b13737}
+  .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .room{display:flex;flex-direction:column;gap:10px;min-height:435px;padding:12px;background:rgba(255,255,255,.96);border:2px solid #e2edfa;border-radius:23px;color:inherit;box-shadow:0 12px 25px #16417d30;overflow:hidden}
+  .room-image{height:145px;width:100%;border-radius:14px;object-fit:cover;object-position:center;display:block}
+  .room .namegroup{text-align:center;padding:0 5px}
+  .room-status{font-size:14px;font-weight:800;text-align:center;line-height:1.3;color:#0e793e}
+  .room-status.inactive{color:#657789}
+  .dotstatus{display:inline-block;width:11px;height:11px;border-radius:50%;background:#19a959;vertical-align:middle;margin-right:7px}
+  .room-status.inactive .dotstatus{background:#9daebe}
+  .room.available:hover{border-color:#b7d1f7;box-shadow:0 12px 25px #174c8819}
+  .room-header{display:flex;align-items:center;justify-content:center;gap:9px}
+  .room-icon{display:none}
+  .room-name{margin:0;font-size:clamp(19px,1.4vw,23px);line-height:1.2;font-weight:800;overflow-wrap:anywhere}
+  .room-desc{margin:0;color:#516d89;font-size:13px;line-height:1.28;text-align:center;min-height:34px}
+  .room-actions{margin-top:auto;display:flex;gap:9px;flex-direction:column;align-items:stretch}
+  .action-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:63px;padding:9px 12px;border-radius:11px;font-size:17px;font-weight:800;text-decoration:none;text-align:center;cursor:pointer;line-height:1.2}
+  .join-btn{border:2px solid #1d69d9;background:#1d69d9;color:#fff}.join-btn:hover{background:#1256be}
+  .copy-btn{border:2px solid #158849;background:#159b52;color:#fff}.copy-btn:hover{background:#0d8243}
+  .copy-btn.copied{border-color:#68ba88;background:#e8f7ed;color:#17653b}
+  .room-action{margin-top:auto;display:flex;flex-direction:column;gap:9px}.room-action .action-btn{background:#a5b1bf;color:#f8fafc;border:2px solid #a5b1bf;cursor:not-allowed}
+  .room.disabled{background:rgba(255,255,255,.88)}.room.disabled .room-image{filter:saturate(.65);opacity:.85}
+  .empty{text-align:center;padding:55px 20px;background:#fff;border-radius:20px;color:#65778b;font-size:20px;grid-column:1/-1}
+  .note{text-align:center;margin:22px auto 0;max-width:950px;color:#183b61;line-height:1.6;font-size:16px;background:#ffffffc0;padding:12px 20px;border-radius:18px}
+  .admin-link{color:#2462a9;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+  footer{margin-top:19px;font-size:14px;text-align:center;color:#325574;line-height:1.7}
+  @media(max-width:760px){.shell{padding:15px 14px 30px}.grid{grid-template-columns:1fr;gap:14px}.room{min-height:0;padding:12px}.room-image{height:170px}.bar{flex-direction:column;text-align:center}.status{text-align:center}.topbrand{font-size:18px}.topdate{font-size:13px}.topdate strong{font-size:20px}}
+  @media(min-width:761px) and (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.room-image{height:170px}}
+</style>
 </head>
 <body>
-  <main class="shell">
-    <header>
-      <div class="brand"><span class="brand-dot" aria-hidden="true"></span><span id="brand">HỆ THỐNG PHÒNG HỌP</span></div>
-      <h1 id="title">Chọn phòng họp để tham gia</h1>
-      <p class="lead" id="subtitle">Dùng chuột chọn phòng họp bên dưới. Không cần gõ đường dẫn dài trên TV.</p>
-    </header>
-    <div class="bar"><span class="bar-label">📺 Danh sách phòng họp</span><span class="status" id="status" role="status" aria-live="polite">Đang tải danh sách...</span></div>
-    <section class="grid" id="rooms" aria-label="Các phòng họp"></section>
-    <p class="note">Nhấn <strong>THAM GIA</strong> để mở cuộc họp, hoặc <strong>SAO CHÉP LINK</strong> để gửi cho người khác. Nếu sao chép không hoạt động trên TV, hãy dùng máy tính/điện thoại. Dùng nút <strong>Quay lại (Back)</strong> của trình duyệt để trở về.</p>
-    <footer id="footer">Cổng truy cập cuộc họp • Có thể dùng trên Smart TV, máy tính và điện thoại<br><br><a class="admin-link" href="./admin.html" rel="nofollow">Quản trị phòng họp</a></footer>
-  </main>
-  <script src="./firebase-config.js"></script>
-  <script>
-    (function () {
-      'use strict';
-      var status = document.getElementById('status');
-      var container = document.getElementById('rooms');
-      var brand = document.getElementById('brand');
-      var title = document.getElementById('title');
-      var subtitle = document.getElementById('subtitle');
-      var lastPayload = '';
-      var config = window.PHONGHOP_FIREBASE || {};
-      var base = typeof config.databaseURL === 'string' ? config.databaseURL.replace(/\/+$/, '') : '';
-      // Trình duyệt TV chỉ cần HTTP GET, không phải tải SDK Firebase.
-      var isOnline = /^https:\/\/[a-z0-9][a-z0-9.-]+(?::443)?$/i.test(base)
-        && base.indexOf('YOUR_') === -1 && base.indexOf('THAY_') === -1;
-      function validHttpUrl(url) {
-        if (typeof url !== 'string' || !/^https:\/\//i.test(url)) return false;
-        try { var u = new URL(url); return u.protocol === 'https:'; }
-        catch (e) { return false; }
-      }
-      function makeText(tag, css, value) {
-        var element = document.createElement(tag);
-        element.className = css;
-        element.textContent = value || '';
-        return element;
-      }
-      function sortedRooms(raw) {
-        if (Array.isArray(raw)) return raw;
-        if (!raw || typeof raw !== 'object') return [];
-        var rooms = [];
-        Object.keys(raw).forEach(function (id) {
-          if (raw[id] && typeof raw[id] === 'object') rooms.push(raw[id]);
-        });
-        rooms.sort(function (a, b) { return (Number(a.order) || 0) - (Number(b.order) || 0); });
-        return rooms;
-      }
-      // Sao chép trực tiếp link cuộc họp; ưu tiên Clipboard API, có phương án dự phòng.
-      function legacyCopy(text) {
-        return new Promise(function (resolve, reject) {
-          var field = document.createElement('textarea');
-          field.value = text;
-          field.setAttribute('readonly', '');
-          field.style.position = 'fixed';
-          field.style.left = '-9999px';
-          field.style.top = '0';
-          document.body.appendChild(field);
-          field.focus();
-          field.select();
-          var copied = false;
-          try { copied = document.execCommand('copy'); } catch (error) { copied = false; }
-          document.body.removeChild(field);
-          if (copied) resolve();
-          else reject(new Error('Trình duyệt không hỗ trợ sao chép tự động'));
-        });
-      }
-      function copyMeetingUrl(url) {
-        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-          return navigator.clipboard.writeText(url).catch(function () { return legacyCopy(url); });
-        }
-        return legacyCopy(url);
-      }
-      function draw(data) {
-        brand.textContent = data.companyName || 'HỆ THỐNG PHÒNG HỌP CÔNG TY';
-        title.textContent = data.siteTitle || 'Chọn phòng họp để tham gia';
-        subtitle.textContent = data.description || 'Dùng chuột chọn phòng họp bên dưới. Không cần nhập đường dẫn dài trên Smart TV.';
-        container.textContent = '';
-        var rooms = sortedRooms(data.rooms);
-        if (!rooms.length) {
-          container.appendChild(makeText('p', 'empty', 'Chưa có phòng họp nào. Quản trị viên hãy mở trang Quản trị để tạo phòng.'));
-          status.textContent = '0 phòng họp';
-          return;
-        }
-        var count = 0;
-        rooms.forEach(function (room) {
-          if (!room || typeof room !== 'object') return;
-          var active = room.enabled === true && validHttpUrl(room.url);
-          var box = document.createElement('article');
-          box.className = 'room' + (active ? ' available' : ' disabled');
-          var heading = makeText('div', 'room-header', '');
-          heading.appendChild(makeText('span', 'room-icon', '▶'));
-          heading.appendChild(makeText('h2', 'room-name', room.name || 'Phòng họp'));
-          box.appendChild(heading);
-          box.appendChild(makeText('p', 'room-desc', room.description || 'Nhấn để tham gia cuộc họp'));
-          if (active) {
-            count++;
-            var actions = makeText('div', 'room-actions', '');
-            var join = makeText('a', 'action-btn join-btn', '▶ THAM GIA');
-            join.href = room.url;
-            join.target = '_self'; // Để Smart TV không cần chuyển tab.
-            join.referrerPolicy = 'no-referrer';
-            join.setAttribute('aria-label', 'Tham gia ' + (room.name || 'phòng họp'));
-            var copy = makeText('button', 'action-btn copy-btn', '📋 SAO CHÉP LINK');
-            copy.type = 'button';
-            copy.setAttribute('aria-label', 'Sao chép link ' + (room.name || 'phòng họp'));
-            copy.addEventListener('click', function () {
-              // Sao chép URL của phòng thay vì URL website tổng.
-              copyMeetingUrl(room.url).then(function () {
-                copy.textContent = '✓ ĐÃ SAO CHÉP';
-                copy.classList.add('copied');
-                window.setTimeout(function () {
-                  copy.textContent = '📋 SAO CHÉP LINK';
-                  copy.classList.remove('copied');
-                }, 2500);
-              }).catch(function () {
-                // Một số trình duyệt TV chặn Clipboard API và execCommand.
-                // Trên máy tính, hộp thoại này cho phép sao chép link thủ công.
-                window.prompt('Không sao chép tự động được. Hãy sao chép link dưới đây:', room.url);
-              });
-            });
-            actions.appendChild(join);
-            actions.appendChild(copy);
-            box.appendChild(actions);
-          } else {
-            box.appendChild(makeText('span', 'room-action', 'CHƯA CÓ LINK HỌP'));
-          }
-          container.appendChild(box);
-        });
-        status.className = 'status';
-        status.textContent = count + '/' + rooms.length + ' phòng có thể truy cập';
-      }
-      function showError(err) {
-        if (!lastPayload) {
-          container.textContent = '';
-          container.appendChild(makeText('p', 'empty', 'Không tải được dữ liệu phòng họp. Hãy tải lại trang hoặc liên hệ IT.'));
-        }
-        status.textContent = 'Lỗi cập nhật dữ liệu' + (isOnline ? ' (Firebase)' : ' (rooms.json)');
-        status.className = 'status error';
-        if (window.console) console.warn('Không tải được phòng họp:', err);
-      }
-      function load() {
-        var url = isOnline ? base + '/rooms.json?refresh=' + Date.now()
-                           : './rooms.json?refresh=' + Date.now();
-        fetch(url, { cache: 'no-store' })
-          .then(function (response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.text();
-          })
-          .then(function (raw) {
-            if (raw !== lastPayload) {
-              var items = JSON.parse(raw);
-              if (isOnline) {
-                draw({ rooms: items });
-              } else {
-                if (!items || typeof items !== 'object') throw new Error('JSON không hợp lệ');
-                draw(items);
-              }
-              lastPayload = raw;
-            }
-          }).catch(showError);
-      }
-      load();
-      setInterval(load, 30000);
-      window.addEventListener('focus', load);
-    }());
-  </script>
+<main class="shell bi" id="app">
+  <div class="topbar">
+    <div class="topbrand"><span class="topbrand-icon" aria-hidden="true">▣</span><div>LinkHop<div class="topbrand-sub">Phòng họp trực tuyến / 在线会议室</div></div></div>
+    <div class="topdate" id="datetime"></div>
+  </div>
+  <header>
+    <div class="brand"><span class="brand-dot" aria-hidden="true"></span><span data-i18n="brand"></span></div>
+    <h1 data-i18n="title"></h1>
+    <p class="lead" data-i18n="subtitle"></p>
+  </header>
+  <div class="bar">
+    <span class="bar-label">📺 <span data-i18n="roomList"></span></span>
+    <span id="status" class="status" role="status" aria-live="polite"></span>
+  </div>
+  <section id="rooms" class="grid" aria-label="Danh sách phòng họp / 会议室列表"></section>
+  <p class="note" data-i18n="note"></p>
+  <footer><div data-i18n="footer"></div><br><a class="admin-link" href="./admin.html" rel="nofollow" data-i18n="admin"></a></footer>
+</main>
+<script src="./firebase-config.js"></script>
+<script>
+(function(){
+  'use strict';
+  var dict={
+    brand:['HỆ THỐNG PHÒNG HỌP CÔNG TY','公司会议系统'],
+    title:['Chọn phòng họp để tham gia','请选择要加入的会议室'],
+    subtitle:['Dùng chuột chọn phòng họp. Không cần nhập đường dẫn dài trên Smart TV.','使用鼠标选择会议室，无需在智能电视上输入长链接。'],
+    roomList:['Danh sách phòng họp','会议室列表'],
+    loading:['Đang tải danh sách...','正在加载会议室列表…'],
+    empty:['Chưa có phòng họp nào. Vui lòng liên hệ quản trị viên.','目前没有会议室，请联系管理员。'],
+    join:['▶ THAM GIA','加入会议'],
+    copy:['▤ SAO CHÉP LINK','复制会议链接'],
+    copied:['✓ ĐÃ SAO CHÉP','✓ 已复制'],
+    disabled:['TẠM NGƯNG / CHƯA CÓ LINK','暂停使用 / 暂无链接'],
+    statusOn:['Đang hoạt động','正在使用'],statusOff:['Tạm ngưng','暂停使用'],
+    defaultRoom:['Phòng họp','会议室'],
+    defaultDesc:['Nhấn để tham gia cuộc họp','点击加入会议'],
+    note:['Nhấn THAM GIA để mở cuộc họp hoặc SAO CHÉP LINK để gửi cho người khác. Nếu TV không hỗ trợ sao chép, hãy dùng điện thoại hoặc máy tính.','点击“加入会议”直接进入会议，或点击“复制链接”分享给他人。如果电视不支持复制，请使用手机或电脑。'],
+    footer:['Dùng trên Smart TV, máy tính và điện thoại','支持智能电视、电脑和手机'],
+    admin:['Quản trị phòng họp','会议管理'],
+    failed:['Không tải được dữ liệu. Hãy tải lại trang hoặc liên hệ IT.','无法加载数据，请刷新页面或联系技术人员。'],
+    statusError:['Lỗi cập nhật dữ liệu','数据更新失败'],
+    manualCopy:['Không thể sao chép tự động. Hãy sao chép link này:','无法自动复制，请手动复制此链接：']
+  };
+  var app=document.getElementById('app'),box=document.getElementById('rooms'),status=document.getElementById('status');
+  var mode='bi',latest=null,lastPayload='',timer=0,copyReset=null;
+  function text(key){var v=dict[key]||['',''];return mode==='zh'?v[1]:mode==='vi'?v[0]:v[0]+' / '+v[1];}
+  function content(node,vi,zh){node.textContent='';if(mode==='bi'&&zh){var a=document.createElement('span');a.className='vi';a.lang='vi';a.textContent=vi;var b=document.createElement('span');b.className='zh';b.lang='zh-Hans';b.textContent=zh;node.appendChild(a);node.appendChild(b);}else{node.textContent=(mode==='zh'&&zh)?zh:vi;}}
+  function i18n(node,key){var pair=dict[key];content(node,pair[0],pair[1]);}
+  function elem(tag,cls){var n=document.createElement(tag);if(cls)n.className=cls;return n;}
+  function validUrl(s){if(typeof s!=='string'||!/^https:\/\//i.test(s))return false;try{var u=new URL(s);return u.protocol==='https:'&&!!u.hostname;}catch(e){return false;}}
+  function sorted(raw){if(Array.isArray(raw))return raw.slice().sort(byOrder);if(!raw||typeof raw!=='object')return[];return Object.keys(raw).map(function(k){return raw[k];}).filter(function(v){return v&&typeof v==='object';}).sort(byOrder);}
+  function byOrder(a,b){return(Number(a.order)||0)-(Number(b.order)||0);}
+  function nameZh(room){if(room.nameZh&&String(room.nameZh).trim())return String(room.nameZh);var s=String(room.name||'');var m=s.match(/^phòng\s*họp\s*(\d+)$/i);return m?'会议室 '+m[1]:'';}
+  function descZh(room){if(room.descriptionZh&&String(room.descriptionZh).trim())return String(room.descriptionZh);var a={
+    'Cuộc họp chung':'综合会议','Cuộc họp bộ phận':'部门会议','Họp trực tuyến':'线上会议','Họp với đối tác':'合作伙伴会议'};return a[String(room.description||'')]||'';}
+  function setStatic(){document.documentElement.lang=mode==='zh'?'zh-Hans':'vi';app.classList.toggle('bi',mode==='bi');document.querySelectorAll('[data-i18n]').forEach(function(n){i18n(n,n.getAttribute('data-i18n'));});}
+  function legacyCopy(url){return new Promise(function(resolve,reject){var input=document.createElement('textarea');input.value=url;input.setAttribute('readonly','');input.style.position='fixed';input.style.left='-9999px';document.body.appendChild(input);input.focus();input.select();var ok=false;try{ok=document.execCommand('copy');}catch(e){}document.body.removeChild(input);ok?resolve():reject(new Error('copy failed'));});}
+  function copyUrl(url){if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(url).catch(function(){return legacyCopy(url);});return legacyCopy(url);}
+  function nowText(){try{var d=new Date(),tz='Asia/Ho_Chi_Minh',v=new Intl.DateTimeFormat('vi-VN',{timeZone:tz,weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(d),zh=new Intl.DateTimeFormat('zh-CN',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',weekday:'long'}).format(d),tm=new Intl.DateTimeFormat('vi-VN',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);document.getElementById('datetime').textContent=v+' / '+zh+'  •  '+tm;}catch(e){}}
+  function draw(data){
+    latest=data;box.textContent='';var rooms=sorted(data.rooms);if(!rooms.length){var p=elem('p','empty');i18n(p,'empty');box.appendChild(p);status.textContent=mode==='zh'?'0 个会议室':mode==='vi'?'0 phòng họp':'0 phòng họp / 0 个会议室';return;}
+    var count=0;
+    rooms.forEach(function(r){if(!r||typeof r!=='object')return;var active=r.enabled===true&&validUrl(r.url),row=elem('article','room'+(active?' available':' disabled'));
+      var photo=elem('img','room-image');photo.src='./phong-hop-'+(((Math.max(1,Number(r.order)||rooms.indexOf(r)+1)-1)%4)+1)+'.jpg';photo.alt='';photo.loading='lazy';row.appendChild(photo);
+      var head=elem('div','room-header'),ico=elem('span','room-icon'),title=elem('h2','room-name');ico.textContent='▶';content(title,String(r.name||dict.defaultRoom[0]),nameZh(r)||(!r.name?dict.defaultRoom[1]:''));head.appendChild(ico);head.appendChild(title);row.appendChild(head);
+      var desc=elem('p','room-desc');content(desc,String(r.description||dict.defaultDesc[0]),descZh(r)||(!r.description?dict.defaultDesc[1]:''));row.appendChild(desc);var indicator=elem('div','room-status'+(active?'':' inactive')),dot=elem('span','dotstatus'),label=elem('span');i18n(label,active?'statusOn':'statusOff');indicator.appendChild(dot);indicator.appendChild(label);row.appendChild(indicator);
+      if(active){count++;var actions=elem('div','room-actions');var join=elem('a','action-btn join-btn');join.href=r.url;join.target='_self';join.referrerPolicy='no-referrer';i18n(join,'join');join.setAttribute('aria-label',text('join')+' '+String(r.name||''));
+        var copy=elem('button','action-btn copy-btn');copy.type='button';i18n(copy,'copy');copy.setAttribute('aria-label',text('copy')+' '+String(r.name||''));
+        copy.addEventListener('click',function(){copyUrl(r.url).then(function(){i18n(copy,'copied');copy.classList.add('copied');if(copyReset)clearTimeout(copyReset);copyReset=setTimeout(function(){if(copy.isConnected){i18n(copy,'copy');copy.classList.remove('copied');}},2500);}).catch(function(){window.prompt(text('manualCopy'),r.url);});});
+        actions.appendChild(join);actions.appendChild(copy);row.appendChild(actions);
+      }else{var off=elem('div','room-action'),disabledJoin=elem('button','action-btn'),disabledCopy=elem('button','action-btn');disabledJoin.type='button';disabledCopy.type='button';disabledJoin.disabled=true;disabledCopy.disabled=true;i18n(disabledJoin,'join');i18n(disabledCopy,'copy');off.appendChild(disabledJoin);off.appendChild(disabledCopy);row.appendChild(off);}
+      box.appendChild(row);
+    });
+    status.className='status';status.textContent=mode==='zh'?'可进入 '+count+'/'+rooms.length+' 个会议室':mode==='vi'?count+'/'+rooms.length+' phòng có thể truy cập':count+'/'+rooms.length+' phòng có thể truy cập / '+count+'/'+rooms.length+' 个会议室可进入';
+  }
+  var config=window.PHONGHOP_FIREBASE||{},base=typeof config.databaseURL==='string'?config.databaseURL.replace(/\/+$/,''):'';
+  var online=/^https:\/\/[a-z0-9][a-z0-9.-]+(?::443)?$/i.test(base)&&base.indexOf('THAY_')<0&&base.indexOf('YOUR_')<0;
+  function showError(e){if(!latest){box.textContent='';var p=elem('p','empty');i18n(p,'failed');box.appendChild(p);}status.textContent=text('statusError')+(online?' (Firebase)':' (rooms.json)');status.className='status error';if(window.console)console.warn(e);}
+  function load(){var url=online?base+'/rooms.json?refresh='+Date.now():'./rooms.json?refresh='+Date.now();fetch(url,{cache:'no-store'}).then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.text();}).then(function(raw){if(raw!==lastPayload){var obj=JSON.parse(raw);if(!online&&(!obj||typeof obj!=='object'))throw new Error('Invalid JSON');draw(online?{rooms:obj}:obj);lastPayload=raw;}}).catch(showError);}
+  setStatic();nowText();setInterval(nowText,60000);status.textContent=text('loading');load();setInterval(load,30000);window.addEventListener('focus',load);
+}());
+</script>
 </body>
 </html>
