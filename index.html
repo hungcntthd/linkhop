@@ -22,24 +22,29 @@
     .status.error { color: #b13737; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
     .room { display: flex; flex-direction: column; gap: 12px; min-height: 208px; padding: 28px 30px; background: #fff; border: 2px solid #dbe8f8; border-radius: 22px; text-decoration: none; color: inherit; box-shadow: 0 9px 24px #174c8812; transition: transform .16s, box-shadow .16s, border-color .16s; }
-    a.room { cursor: pointer; }
-    a.room:hover, a.room:focus { transform: translateY(-3px); border-color: #246ce9; box-shadow: 0 14px 28px #174c8824; outline: none; }
-    a.room:focus-visible { outline: 4px solid #fdac36; outline-offset: 2px; }
+    .room.available:hover { border-color: #b7d1f7; box-shadow: 0 12px 25px #174c8819; }
+    .room-actions { margin-top: auto; padding-left: 74px; display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
+    .action-btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; flex: 1 1 170px; min-height: 58px; padding: 12px 17px; border-radius: 13px; font-size: 18px; font-weight: 800; text-decoration: none; text-align: center; cursor: pointer; line-height: 1.3; }
+    .join-btn { border: 2px solid #1d69d9; background: #1d69d9; color: #fff; }
+    .join-btn:hover { background: #1256be; }
+    .copy-btn { border: 2px solid #b4d1f6; background: #f1f7ff; color: #1258b2; }
+    .copy-btn:hover { background: #e2efff; }
+    .action-btn:focus-visible { outline: 4px solid #fdac36; outline-offset: 3px; }
+    .copy-btn.copied { border-color: #68ba88; background: #e8f7ed; color: #17653b; }
+    .copy-hint { font-size: 15px; color: #617791; margin: 3px 0 0 74px; }
     .room-header { display: flex; align-items: center; gap: 16px; }
     .room-icon { display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 58px; height: 58px; border-radius: 15px; color: #fff; font-size: 29px; background: #2073e9; }
     .room-name { margin: 0; font-size: clamp(22px, 2.5vw, 30px); line-height: 1.22; font-weight: 800; overflow-wrap: anywhere; }
     .room-desc { margin: 0; padding-left: 74px; color: #62748a; font-size: 18px; line-height: 1.45; }
-    .room-action { margin-top: auto; padding-left: 74px; font-size: 19px; font-weight: 800; color: #1260d4; }
-    .room-action:after { content: '  →'; font-size: 23px; }
-    .room.disabled { opacity: .65; background: #f8fafc; box-shadow: none; }
+    .room-action { margin-top: auto; padding-left: 74px; font-size: 19px; font-weight: 800; color: #65778b; }
+    .room.disabled { opacity: .7; background: #f8fafc; box-shadow: none; }
     .room.disabled .room-icon { background: #8799ac; }
-    .room.disabled .room-action { color: #65778b; }
-    .room.disabled .room-action:after { content: ''; }
     .empty { text-align:center; padding: 55px 20px; background:#fff; border-radius:20px; color:#65778b; font-size: 20px; grid-column:1/-1; }
     .admin-link { color: #2462a9; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
     .note { margin: 28px 0 0; text-align: center; color: #5b7087; line-height: 1.7; font-size: 17px; }
     footer { margin-top: 44px; font-size: 14px; text-align:center; color:#7b8da1; }
-    @media (max-width: 670px) { .shell { padding: 24px 14px 35px; } .grid { grid-template-columns: 1fr; gap: 14px; } .room { min-height: 175px; padding: 21px; } .room-desc, .room-action { padding-left: 0; } .bar { flex-direction: column; text-align:center; } }
+    @media (max-width: 670px) { .shell { padding: 24px 14px 35px; } .grid { grid-template-columns: 1fr; gap: 14px; } .room { min-height: 175px; padding: 21px; } .room-desc, .room-action, .room-actions, .copy-hint { padding-left: 0; margin-left: 0; } .bar { flex-direction: column; text-align:center; } }
+    @media (min-width: 671px) and (max-width: 1000px) { .room-actions { padding-left: 0; } .action-btn { font-size: 16px; } }
     @media (prefers-reduced-motion: reduce) { .room { transition: none; } }
   </style>
 </head>
@@ -52,7 +57,7 @@
     </header>
     <div class="bar"><span class="bar-label">📺 Danh sách phòng họp</span><span class="status" id="status" role="status" aria-live="polite">Đang tải danh sách...</span></div>
     <section class="grid" id="rooms" aria-label="Các phòng họp"></section>
-    <p class="note">Khi vào phòng họp, hãy làm theo hướng dẫn của phần mềm họp. Dùng nút <strong>Quay lại (Back)</strong> của trình duyệt để về trang này.</p>
+    <p class="note">Nhấn <strong>THAM GIA</strong> để mở cuộc họp, hoặc <strong>SAO CHÉP LINK</strong> để gửi cho người khác. Nếu sao chép không hoạt động trên TV, hãy dùng máy tính/điện thoại. Dùng nút <strong>Quay lại (Back)</strong> của trình duyệt để trở về.</p>
     <footer id="footer">Cổng truy cập cuộc họp • Có thể dùng trên Smart TV, máy tính và điện thoại<br><br><a class="admin-link" href="./admin.html" rel="nofollow">Quản trị phòng họp</a></footer>
   </main>
   <script src="./firebase-config.js"></script>
@@ -91,6 +96,31 @@
         rooms.sort(function (a, b) { return (Number(a.order) || 0) - (Number(b.order) || 0); });
         return rooms;
       }
+      // Sao chép trực tiếp link cuộc họp; ưu tiên Clipboard API, có phương án dự phòng.
+      function legacyCopy(text) {
+        return new Promise(function (resolve, reject) {
+          var field = document.createElement('textarea');
+          field.value = text;
+          field.setAttribute('readonly', '');
+          field.style.position = 'fixed';
+          field.style.left = '-9999px';
+          field.style.top = '0';
+          document.body.appendChild(field);
+          field.focus();
+          field.select();
+          var copied = false;
+          try { copied = document.execCommand('copy'); } catch (error) { copied = false; }
+          document.body.removeChild(field);
+          if (copied) resolve();
+          else reject(new Error('Trình duyệt không hỗ trợ sao chép tự động'));
+        });
+      }
+      function copyMeetingUrl(url) {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          return navigator.clipboard.writeText(url).catch(function () { return legacyCopy(url); });
+        }
+        return legacyCopy(url);
+      }
       function draw(data) {
         brand.textContent = data.companyName || 'HỆ THỐNG PHÒNG HỌP CÔNG TY';
         title.textContent = data.siteTitle || 'Chọn phòng họp để tham gia';
@@ -106,22 +136,45 @@
         rooms.forEach(function (room) {
           if (!room || typeof room !== 'object') return;
           var active = room.enabled === true && validHttpUrl(room.url);
-          var box = document.createElement(active ? 'a' : 'div');
-          box.className = 'room' + (active ? '' : ' disabled');
-          if (active) {
-            box.href = room.url;
-            // Mở trong cùng tab: thân thiện với trình duyệt Smart TV.
-            box.target = '_self';
-            box.referrerPolicy = 'no-referrer';
-            box.setAttribute('aria-label', 'Tham gia ' + (room.name || 'phòng họp'));
-            count++;
-          }
+          var box = document.createElement('article');
+          box.className = 'room' + (active ? ' available' : ' disabled');
           var heading = makeText('div', 'room-header', '');
           heading.appendChild(makeText('span', 'room-icon', '▶'));
           heading.appendChild(makeText('h2', 'room-name', room.name || 'Phòng họp'));
           box.appendChild(heading);
           box.appendChild(makeText('p', 'room-desc', room.description || 'Nhấn để tham gia cuộc họp'));
-          box.appendChild(makeText('span', 'room-action', active ? 'THAM GIA NGAY' : 'CHƯA CÓ LINK HỌP'));
+          if (active) {
+            count++;
+            var actions = makeText('div', 'room-actions', '');
+            var join = makeText('a', 'action-btn join-btn', '▶ THAM GIA');
+            join.href = room.url;
+            join.target = '_self'; // Để Smart TV không cần chuyển tab.
+            join.referrerPolicy = 'no-referrer';
+            join.setAttribute('aria-label', 'Tham gia ' + (room.name || 'phòng họp'));
+            var copy = makeText('button', 'action-btn copy-btn', '📋 SAO CHÉP LINK');
+            copy.type = 'button';
+            copy.setAttribute('aria-label', 'Sao chép link ' + (room.name || 'phòng họp'));
+            copy.addEventListener('click', function () {
+              // Sao chép URL của phòng thay vì URL website tổng.
+              copyMeetingUrl(room.url).then(function () {
+                copy.textContent = '✓ ĐÃ SAO CHÉP';
+                copy.classList.add('copied');
+                window.setTimeout(function () {
+                  copy.textContent = '📋 SAO CHÉP LINK';
+                  copy.classList.remove('copied');
+                }, 2500);
+              }).catch(function () {
+                // Một số trình duyệt TV chặn Clipboard API và execCommand.
+                // Trên máy tính, hộp thoại này cho phép sao chép link thủ công.
+                window.prompt('Không sao chép tự động được. Hãy sao chép link dưới đây:', room.url);
+              });
+            });
+            actions.appendChild(join);
+            actions.appendChild(copy);
+            box.appendChild(actions);
+          } else {
+            box.appendChild(makeText('span', 'room-action', 'CHƯA CÓ LINK HỌP'));
+          }
           container.appendChild(box);
         });
         status.className = 'status';
