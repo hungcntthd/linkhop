@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cổng truy cập cuộc họp</title>
+  <style>
+    :root { font-family: Arial, Helvetica, sans-serif; color: #15304c; background: #eef4fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 20% 0%, #e0edff, transparent 52%), #f3f7fc; }
+    .shell { max-width: 1160px; margin: 0 auto; padding: 48px 28px 50px; }
+    header { text-align: center; padding: 16px 12px 20px; }
+    .brand { display: inline-flex; gap: 10px; align-items: center; color: #2462a9; letter-spacing: .15em; font-size: 16px; font-weight: 800; }
+    .brand-dot { display: inline-block; width: 14px; height: 14px; background: #2b78ed; border-radius: 50%; box-shadow: 0 0 0 6px #deebfc; }
+    h1 { font-size: clamp(30px, 4.3vw, 54px); line-height: 1.13; margin: 22px 0 14px; letter-spacing: -.025em; }
+    .lead { max-width: 740px; margin: 0 auto; color: #58708a; font-size: clamp(18px, 2.1vw, 24px); line-height: 1.6; }
+    .bar { background: #fff; border: 1px solid #dbe6f5; border-radius: 16px; padding: 16px 22px; box-shadow: 0 5px 16px #2047760a; margin: 25px 0 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .bar-label { font-weight: 700; font-size: 18px; }
+    .status { font-size: 15px; color: #617791; }
+    .status.error { color: #b13737; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .room { display: flex; flex-direction: column; gap: 12px; min-height: 208px; padding: 28px 30px; background: #fff; border: 2px solid #dbe8f8; border-radius: 22px; text-decoration: none; color: inherit; box-shadow: 0 9px 24px #174c8812; transition: transform .16s, box-shadow .16s, border-color .16s; }
+    a.room { cursor: pointer; }
+    a.room:hover, a.room:focus { transform: translateY(-3px); border-color: #246ce9; box-shadow: 0 14px 28px #174c8824; outline: none; }
+    a.room:focus-visible { outline: 4px solid #fdac36; outline-offset: 2px; }
+    .room-header { display: flex; align-items: center; gap: 16px; }
+    .room-icon { display: flex; justify-content: center; align-items: center; flex-shrink: 0; width: 58px; height: 58px; border-radius: 15px; color: #fff; font-size: 29px; background: #2073e9; }
+    .room-name { margin: 0; font-size: clamp(22px, 2.5vw, 30px); line-height: 1.22; font-weight: 800; overflow-wrap: anywhere; }
+    .room-desc { margin: 0; padding-left: 74px; color: #62748a; font-size: 18px; line-height: 1.45; }
+    .room-action { margin-top: auto; padding-left: 74px; font-size: 19px; font-weight: 800; color: #1260d4; }
+    .room-action:after { content: '  →'; font-size: 23px; }
+    .room.disabled { opacity: .65; background: #f8fafc; box-shadow: none; }
+    .room.disabled .room-icon { background: #8799ac; }
+    .room.disabled .room-action { color: #65778b; }
+    .room.disabled .room-action:after { content: ''; }
+    .empty { text-align:center; padding: 55px 20px; background:#fff; border-radius:20px; color:#65778b; font-size: 20px; grid-column:1/-1; }
+    .note { margin: 28px 0 0; text-align: center; color: #5b7087; line-height: 1.7; font-size: 17px; }
+    footer { margin-top: 44px; font-size: 14px; text-align:center; color:#7b8da1; }
+    @media (max-width: 670px) { .shell { padding: 24px 14px 35px; } .grid { grid-template-columns: 1fr; gap: 14px; } .room { min-height: 175px; padding: 21px; } .room-desc, .room-action { padding-left: 0; } .bar { flex-direction: column; text-align:center; } }
+    @media (prefers-reduced-motion: reduce) { .room { transition: none; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="brand-dot" aria-hidden="true"></span><span id="brand">HỆ THỐNG PHÒNG HỌP</span></div>
+      <h1 id="title">Chọn phòng họp để tham gia</h1>
+      <p class="lead" id="subtitle">Dùng chuột chọn phòng họp bên dưới. Không cần gõ đường dẫn dài trên TV.</p>
+    </header>
+    <div class="bar"><span class="bar-label">📺 Danh sách phòng họp</span><span class="status" id="status" role="status" aria-live="polite">Đang tải danh sách...</span></div>
+    <section class="grid" id="rooms" aria-label="Các phòng họp"></section>
+    <p class="note">Khi vào phòng họp, hãy làm theo hướng dẫn của phần mềm họp. Dùng nút <strong>Quay lại (Back)</strong> của trình duyệt để về trang này.</p>
+    <footer id="footer">Cổng truy cập cuộc họp • Có thể dùng trên Smart TV, máy tính và điện thoại</footer>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      var status = document.getElementById('status');
+      var container = document.getElementById('rooms');
+      var brand = document.getElementById('brand');
+      var title = document.getElementById('title');
+      var subtitle = document.getElementById('subtitle');
+      var lastPayload = '';
+      function validHttpUrl(url) {
+        if (typeof url !== 'string' || !/^https?:\/\//i.test(url)) return false;
+        try { var u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:'; } catch (e) { return false; }
+      }
+      function makeText(tag, css, value) {
+        var element = document.createElement(tag);
+        element.className = css;
+        element.textContent = value || '';
+        return element;
+      }
+      function draw(data) {
+        brand.textContent = data.companyName || 'HỆ THỐNG PHÒNG HỌP';
+        title.textContent = data.siteTitle || 'Chọn phòng họp để tham gia';
+        subtitle.textContent = data.description || 'Dùng chuột chọn phòng họp bên dưới.';
+        container.textContent = '';
+        var rooms = Array.isArray(data.rooms) ? data.rooms : [];
+        if (!rooms.length) {
+          container.appendChild(makeText('p', 'empty', 'Chưa có phòng họp nào được thiết lập.'));
+          status.textContent = '0 phòng họp';
+          return;
+        }
+        var count = 0;
+        rooms.forEach(function (room) {
+          if (!room || typeof room !== 'object') return;
+          var active = room.enabled === true && validHttpUrl(room.url);
+          var box = document.createElement(active ? 'a' : 'div');
+          box.className = 'room' + (active ? '' : ' disabled');
+          if (active) {
+            box.href = room.url;
+            // Open in same window: better compatibility with TV browsers that block popups.
+            box.target = '_self';
+            box.setAttribute('aria-label', 'Tham gia ' + (room.name || 'phòng họp'));
+            count++;
+          }
+          var heading = makeText('div', 'room-header', '');
+          heading.appendChild(makeText('span', 'room-icon', '▶'));
+          heading.appendChild(makeText('h2', 'room-name', room.name || 'Phòng họp'));
+          box.appendChild(heading);
+          box.appendChild(makeText('p', 'room-desc', room.description || 'Nhấn để tham gia cuộc họp'));
+          box.appendChild(makeText('span', 'room-action', active ? 'THAM GIA NGAY' : 'CHƯA CÓ LINK HỌP'));
+          container.appendChild(box);
+        });
+        status.className = 'status';
+        status.textContent = count + '/' + rooms.length + ' phòng có thể truy cập';
+      }
+      function showError() {
+        if (!lastPayload) {
+          container.textContent = '';
+          container.appendChild(makeText('p', 'empty', 'Không tải được danh sách phòng họp. Hãy thử tải lại trang hoặc liên hệ bộ phận IT.'));
+        }
+        status.textContent = 'Không thể cập nhật danh sách';
+        status.className = 'status error';
+      }
+      function load() {
+        // Cache-busting allows televisions to pick up changed links after redeployment.
+        fetch('./rooms.json?refresh=' + Date.now(), { cache: 'no-store' })
+          .then(function (response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.text(); })
+          .then(function (raw) {
+            if (raw !== lastPayload) {
+              var data = JSON.parse(raw);
+              if (!data || typeof data !== 'object') throw new Error('Invalid JSON');
+              draw(data);
+              lastPayload = raw;
+            }
+          }).catch(showError);
+      }
+      load();
+      // Keep the page current if a meeting link changes while the TV stays open.
+      setInterval(load, 60000);
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "companyName": "HỆ THỐNG PHÒNG HỌP CÔNG TY",
+  "siteTitle": "Chọn phòng họp để tham gia",
+  "description": "Dùng chuột nhấn vào phòng họp. Không cần nhập đường dẫn dài trên Smart TV.",
+  "rooms": [
+    {
+      "id": "phong-1",
+      "name": "PHÒNG HỌP 01",
+      "description": "Cuộc họp chung",
+      "url": "",
+      "enabled": false
+    },
+    {
+      "id": "phong-2",
+      "name": "PHÒNG HỌP 02",
+      "description": "Cuộc họp bộ phận",
+      "url": "",
+      "enabled": false
+    },
+    {
+      "id": "phong-3",
+      "name": "PHÒNG HỌP 03",
+      "description": "Họp trực tuyến",
+      "url": "",
+      "enabled": false
+    },
+    {
+      "id": "phong-4",
+      "name": "PHÒNG HỌP 04",
+      "description": "Họp với đối tác",
+      "url": "",
+      "enabled": false
+    }
+  ]
+}
