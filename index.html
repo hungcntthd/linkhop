@@ -36,6 +36,7 @@
     .room.disabled .room-action { color: #65778b; }
     .room.disabled .room-action:after { content: ''; }
     .empty { text-align:center; padding: 55px 20px; background:#fff; border-radius:20px; color:#65778b; font-size: 20px; grid-column:1/-1; }
+    .admin-link { color: #2462a9; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
     .note { margin: 28px 0 0; text-align: center; color: #5b7087; line-height: 1.7; font-size: 17px; }
     footer { margin-top: 44px; font-size: 14px; text-align:center; color:#7b8da1; }
     @media (max-width: 670px) { .shell { padding: 24px 14px 35px; } .grid { grid-template-columns: 1fr; gap: 14px; } .room { min-height: 175px; padding: 21px; } .room-desc, .room-action { padding-left: 0; } .bar { flex-direction: column; text-align:center; } }
@@ -52,8 +53,9 @@
     <div class="bar"><span class="bar-label">📺 Danh sách phòng họp</span><span class="status" id="status" role="status" aria-live="polite">Đang tải danh sách...</span></div>
     <section class="grid" id="rooms" aria-label="Các phòng họp"></section>
     <p class="note">Khi vào phòng họp, hãy làm theo hướng dẫn của phần mềm họp. Dùng nút <strong>Quay lại (Back)</strong> của trình duyệt để về trang này.</p>
-    <footer id="footer">Cổng truy cập cuộc họp • Có thể dùng trên Smart TV, máy tính và điện thoại</footer>
+    <footer id="footer">Cổng truy cập cuộc họp • Có thể dùng trên Smart TV, máy tính và điện thoại<br><br><a class="admin-link" href="./admin.html" rel="nofollow">Quản trị phòng họp</a></footer>
   </main>
+  <script src="./firebase-config.js"></script>
   <script>
     (function () {
       'use strict';
@@ -63,9 +65,15 @@
       var title = document.getElementById('title');
       var subtitle = document.getElementById('subtitle');
       var lastPayload = '';
+      var config = window.PHONGHOP_FIREBASE || {};
+      var base = typeof config.databaseURL === 'string' ? config.databaseURL.replace(/\/+$/, '') : '';
+      // Trình duyệt TV chỉ cần HTTP GET, không phải tải SDK Firebase.
+      var isOnline = /^https:\/\/[a-z0-9][a-z0-9.-]+(?::443)?$/i.test(base)
+        && base.indexOf('YOUR_') === -1 && base.indexOf('THAY_') === -1;
       function validHttpUrl(url) {
-        if (typeof url !== 'string' || !/^https?:\/\//i.test(url)) return false;
-        try { var u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:'; } catch (e) { return false; }
+        if (typeof url !== 'string' || !/^https:\/\//i.test(url)) return false;
+        try { var u = new URL(url); return u.protocol === 'https:'; }
+        catch (e) { return false; }
       }
       function makeText(tag, css, value) {
         var element = document.createElement(tag);
@@ -73,14 +81,24 @@
         element.textContent = value || '';
         return element;
       }
+      function sortedRooms(raw) {
+        if (Array.isArray(raw)) return raw;
+        if (!raw || typeof raw !== 'object') return [];
+        var rooms = [];
+        Object.keys(raw).forEach(function (id) {
+          if (raw[id] && typeof raw[id] === 'object') rooms.push(raw[id]);
+        });
+        rooms.sort(function (a, b) { return (Number(a.order) || 0) - (Number(b.order) || 0); });
+        return rooms;
+      }
       function draw(data) {
-        brand.textContent = data.companyName || 'HỆ THỐNG PHÒNG HỌP';
+        brand.textContent = data.companyName || 'HỆ THỐNG PHÒNG HỌP CÔNG TY';
         title.textContent = data.siteTitle || 'Chọn phòng họp để tham gia';
-        subtitle.textContent = data.description || 'Dùng chuột chọn phòng họp bên dưới.';
+        subtitle.textContent = data.description || 'Dùng chuột chọn phòng họp bên dưới. Không cần nhập đường dẫn dài trên Smart TV.';
         container.textContent = '';
-        var rooms = Array.isArray(data.rooms) ? data.rooms : [];
+        var rooms = sortedRooms(data.rooms);
         if (!rooms.length) {
-          container.appendChild(makeText('p', 'empty', 'Chưa có phòng họp nào được thiết lập.'));
+          container.appendChild(makeText('p', 'empty', 'Chưa có phòng họp nào. Quản trị viên hãy mở trang Quản trị để tạo phòng.'));
           status.textContent = '0 phòng họp';
           return;
         }
@@ -92,8 +110,9 @@
           box.className = 'room' + (active ? '' : ' disabled');
           if (active) {
             box.href = room.url;
-            // Open in same window: better compatibility with TV browsers that block popups.
+            // Mở trong cùng tab: thân thiện với trình duyệt Smart TV.
             box.target = '_self';
+            box.referrerPolicy = 'no-referrer';
             box.setAttribute('aria-label', 'Tham gia ' + (room.name || 'phòng họp'));
             count++;
           }
@@ -108,30 +127,39 @@
         status.className = 'status';
         status.textContent = count + '/' + rooms.length + ' phòng có thể truy cập';
       }
-      function showError() {
+      function showError(err) {
         if (!lastPayload) {
           container.textContent = '';
-          container.appendChild(makeText('p', 'empty', 'Không tải được danh sách phòng họp. Hãy thử tải lại trang hoặc liên hệ bộ phận IT.'));
+          container.appendChild(makeText('p', 'empty', 'Không tải được dữ liệu phòng họp. Hãy tải lại trang hoặc liên hệ IT.'));
         }
-        status.textContent = 'Không thể cập nhật danh sách';
+        status.textContent = 'Lỗi cập nhật dữ liệu' + (isOnline ? ' (Firebase)' : ' (rooms.json)');
         status.className = 'status error';
+        if (window.console) console.warn('Không tải được phòng họp:', err);
       }
       function load() {
-        // Cache-busting allows televisions to pick up changed links after redeployment.
-        fetch('./rooms.json?refresh=' + Date.now(), { cache: 'no-store' })
-          .then(function (response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.text(); })
+        var url = isOnline ? base + '/rooms.json?refresh=' + Date.now()
+                           : './rooms.json?refresh=' + Date.now();
+        fetch(url, { cache: 'no-store' })
+          .then(function (response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.text();
+          })
           .then(function (raw) {
             if (raw !== lastPayload) {
-              var data = JSON.parse(raw);
-              if (!data || typeof data !== 'object') throw new Error('Invalid JSON');
-              draw(data);
+              var items = JSON.parse(raw);
+              if (isOnline) {
+                draw({ rooms: items });
+              } else {
+                if (!items || typeof items !== 'object') throw new Error('JSON không hợp lệ');
+                draw(items);
+              }
               lastPayload = raw;
             }
           }).catch(showError);
       }
       load();
-      // Keep the page current if a meeting link changes while the TV stays open.
-      setInterval(load, 60000);
+      setInterval(load, 30000);
+      window.addEventListener('focus', load);
     }());
   </script>
 </body>

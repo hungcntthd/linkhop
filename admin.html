@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Quản trị phòng họp</title>
+  <style>
+    *{box-sizing:border-box} :root{font-family:Arial,Helvetica,sans-serif;color:#19334e;background:#edf4ff}
+    body{margin:0;min-height:100vh;background:linear-gradient(115deg,#e1edff,#f6f9ff 65%)}
+    main{max-width:1020px;margin:0 auto;padding:28px 20px 65px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+    h1{font-size:clamp(27px,4vw,43px);margin:26px 0 7px;line-height:1.2}
+    h2{margin:0 0 18px;font-size:24px}
+    p{line-height:1.6;color:#526981}
+    a{color:#165bbf}
+    .card{background:#fff;border:1px solid #d6e3f5;border-radius:18px;padding:25px;box-shadow:0 8px 24px #1e477611;margin-top:22px}
+    .muted{color:#5f7288}.hint{font-size:14px}
+    label{display:block;color:#334d68;font-size:14px;font-weight:bold;margin:12px 0 6px}
+    input[type=text],input[type=url],input[type=email],input[type=password]{width:100%;padding:13px 14px;border:1px solid #bfcee0;border-radius:10px;font-size:17px;background:#fff;color:#14324e}
+    input:focus{outline:3px solid #b2d1ff;border-color:#246bea}
+    button{border:0;border-radius:10px;padding:13px 20px;font-weight:700;font-size:16px;cursor:pointer;background:#1d69d2;color:white;min-height:46px}
+    button:hover{filter:brightness(.96)}button:disabled{opacity:.6;cursor:not-allowed}
+    .secondary{background:#e8f1ff;color:#14559a}.danger{background:#ffebed;color:#a32137}
+    .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .room{background:#f7faff;border:1px solid #d9e6f6;border-radius:15px;padding:20px;margin-top:14px}
+    .room-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .room-head h3{margin:0;font-size:19px}
+    .columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .checkline{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:16px}
+    .checkline input{width:22px;height:22px;accent-color:#236bd9}
+    .message{border-radius:10px;padding:12px 16px;line-height:1.45;min-height:24px;margin-top:16px}
+    .message:empty{display:none}.message.error{background:#fff0ef;color:#ab2735;border:1px solid #ffc4c4}
+    .message.success{background:#e8f7ee;color:#176238;border:1px solid #bee7cc}
+    .message.info{background:#edf5ff;color:#1b5d9c;border:1px solid #c5dbf4}
+    .hidden{display:none!important}
+    .tag{display:inline-block;background:#e9f1ff;color:#1d60ab;padding:7px 10px;font-size:13px;font-weight:700;border-radius:8px}
+    .login{max-width:500px}
+    .security{background:#fff8e8;color:#725522;border:1px solid #f2dda2;border-radius:12px;padding:13px 16px;margin-top:20px;font-size:14px;line-height:1.55}
+    @media(max-width:650px){.columns{grid-template-columns:1fr}.card{padding:18px}main{padding:20px 13px}.toolbar button{flex-grow:1}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <span class="tag">QUẢN TRỊ PHÒNG HỌP</span>
+    <a href="./index.html">← Xem trang phòng họp</a>
+  </div>
+  <h1>Quản lý đường link cuộc họp</h1>
+  <p>Dán đường dẫn, bật phòng và nhấn <strong>Lưu thay đổi</strong>. Người dùng trên Smart TV sẽ nhìn thấy link mới trong khoảng 30 giây (khi kết nối mạng ổn định).</p>
+  <div id="global-message" class="message" role="status" aria-live="polite"></div>
+
+  <section id="setup" class="card hidden">
+    <h2>Cần kết nối Firebase</h2>
+    <p>Website chưa có cấu hình Firebase hợp lệ. Quản trị viên IT hãy điền <code>firebase-config.js</code>, thiết lập Authentication và Realtime Database Rules theo file <code>HUONG_DAN_CAI_DAT.md</code>, sau đó tải các file lên GitHub.</p>
+  </section>
+
+  <section id="login" class="card login hidden">
+    <h2>Đăng nhập quản trị</h2>
+    <form id="login-form">
+      <label for="email">Email quản trị</label>
+      <input id="email" type="email" autocomplete="username" required placeholder="admin@congty.vn">
+      <label for="password">Mật khẩu</label>
+      <input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mật khẩu Firebase Authentication">
+      <div class="toolbar"><button id="sign-in" type="submit">Đăng nhập</button></div>
+    </form>
+    <p class="hint">Tài khoản được tạo trong Firebase Authentication bởi người quản lý hệ thống. Không dùng mật khẩu GitHub tại đây.</p>
+  </section>
+
+  <section id="editor" class="card hidden">
+    <div class="top"><h2 style="margin:0">Danh sách phòng họp</h2><button class="secondary" id="logout" type="button">Đăng xuất</button></div>
+    <p class="hint" id="session-info"></p>
+    <div id="room-list"></div>
+    <div class="toolbar">
+      <button type="button" id="add-room" class="secondary">+ Thêm phòng họp</button>
+      <button type="button" id="reload" class="secondary">↻ Tải lại dữ liệu</button>
+      <button type="button" id="save">✓ Lưu thay đổi</button>
+    </div>
+    <p class="hint">Nếu sửa nhiều phòng, nhấn <strong>Lưu thay đổi</strong> một lần. Bấm <strong>Tải lại dữ liệu</strong> sẽ hủy những chỉnh sửa chưa lưu trên trang này.</p>
+  </section>
+
+  <div class="security"><strong>Lưu ý bảo mật:</strong> Danh sách đường dẫn hiển thị công khai để Smart TV mở không cần đăng nhập. Không nhập mật khẩu, token hoặc link cuộc họp bí mật vào hệ thống này. Việc đăng nhập quản trị chỉ giới hạn quyền <strong>chỉnh sửa</strong>, không giới hạn quyền <strong>xem link</strong>.</div>
+</main>
+
+<script src="./firebase-config.js"></script>
+<!-- SDK chỉ dùng ở trang quản trị trên PC; trang TV không cần tải SDK này. -->
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.1.0/firebase-database-compat.js"></script>
+<script>
+(function () {
+  'use strict';
+  var config = window.PHONGHOP_FIREBASE || {};
+  var ui = function (id) { return document.getElementById(id); };
+  var db, auth;
+  var rows = [];
+  var store = null;
+  var inProgress = false;
+  var demo = [
+    { id: 'phong-1', name: 'PHÒNG HỌP 01', description: 'Cuộc họp chung', url: '', enabled: false, order: 1 },
+    { id: 'phong-2', name: 'PHÒNG HỌP 02', description: 'Cuộc họp bộ phận', url: '', enabled: false, order: 2 },
+    { id: 'phong-3', name: 'PHÒNG HỌP 03', description: 'Họp trực tuyến', url: '', enabled: false, order: 3 },
+    { id: 'phong-4', name: 'PHÒNG HỌP 04', description: 'Họp với đối tác', url: '', enabled: false, order: 4 }
+  ];
+
+  function show(id) { ui(id).classList.remove('hidden'); }
+  function hide(id) { ui(id).classList.add('hidden'); }
+  function message(msg, kind) {
+    var el = ui('global-message');
+    el.textContent = msg || '';
+    el.className = 'message ' + (kind || 'info');
+  }
+  function validUrl(value) {
+    // Chỉ chấp nhận HTTPS trong môi trường Internet.
+    return /^https:\/\/[a-zA-Z0-9][^\s]*$/.test(value);
+  }
+  function errorText(error) {
+    if (!error) return 'Đã xảy ra lỗi.';
+    var code = error.code || '';
+    if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Email hoặc mật khẩu không đúng.';
+    if (code === 'auth/invalid-email') return 'Email không hợp lệ.';
+    if (code === 'auth/too-many-requests') return 'Đăng nhập quá nhiều lần. Hãy thử lại sau.';
+    if (code === 'PERMISSION_DENIED') return 'Firebase từ chối thao tác. Kiểm tra UID quản trị và Rules của Realtime Database.';
+    return error.message || String(error);
+  }
+  function el(tag, className, content) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (content !== undefined) node.textContent = content;
+    return node;
+  }
+  function field(container, labelText, name, val, type) {
+    var wrapper = el('div');
+    var label = el('label', '', labelText);
+    var input = el('input');
+    input.type = type || 'text';
+    input.value = val || '';
+    input.setAttribute('data-field', name);
+    input.maxLength = name === 'url' ? 2048 : name === 'description' ? 250 : 100;
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    container.appendChild(wrapper);
+    return input;
+  }
+  function render() {
+    var list = ui('room-list');
+    list.textContent = '';
+    if (!rows.length) list.appendChild(el('p', 'muted', 'Chưa có phòng họp. Nhấn “Thêm phòng họp”.'));
+    rows.forEach(function (room, index) {
+      var item = el('div', 'room');
+      item.setAttribute('data-room-id', room.id);
+      var head = el('div', 'room-head');
+      head.appendChild(el('h3', '', 'Phòng ' + (index + 1)));
+      var remove = el('button', 'danger', 'Xóa phòng');
+      remove.type = 'button';
+      remove.onclick = function () {
+        if (confirm('Xóa phòng này khỏi danh sách (chưa lưu)?')) {
+          syncInputs();
+          rows = rows.filter(function (item) { return item.id !== room.id; });
+          render();
+        }
+      };
+      head.appendChild(remove);
+      item.appendChild(head);
+      var cols = el('div', 'columns');
+      field(cols, 'Tên phòng họp', 'name', room.name);
+      field(cols, 'Mô tả', 'description', room.description);
+      item.appendChild(cols);
+      field(item, 'Link họp (bắt đầu bằng https://)', 'url', room.url, 'url');
+      var wrapper = el('label', 'checkline');
+      var toggle = el('input');
+      toggle.type = 'checkbox';
+      toggle.checked = room.enabled === true;
+      toggle.setAttribute('data-field', 'enabled');
+      wrapper.appendChild(toggle);
+      wrapper.appendChild(el('span', '', 'Bật phòng — cho phép người dùng nhấp để tham gia'));
+      item.appendChild(wrapper);
+      list.appendChild(item);
+    });
+  }
+  function syncInputs() {
+    var entries = ui('room-list').querySelectorAll('[data-room-id]');
+    entries.forEach(function (node) {
+      var id = node.getAttribute('data-room-id');
+      var room = rows.find(function (r) { return r.id === id; });
+      if (!room) return;
+      ['name', 'description', 'url'].forEach(function (key) {
+        room[key] = node.querySelector('[data-field="' + key + '"]').value.trim();
+      });
+      room.enabled = node.querySelector('[data-field="enabled"]').checked;
+    });
+  }
+  function setBusy(busy) {
+    inProgress = busy;
+    ['save', 'add-room', 'reload'].forEach(function (id) { ui(id).disabled = busy; });
+  }
+  async function loadData() {
+    setBusy(true);
+    try {
+      var snap = await store.once('value');
+      var data = snap.val();
+      if (data && typeof data === 'object') {
+        rows = Object.keys(data).map(function (key) {
+          var r = data[key] || {};
+          return { id: key, name: String(r.name || ''), description: String(r.description || ''), url: String(r.url || ''), enabled: r.enabled === true, order: Number(r.order) || 0 };
+        }).sort(function (a, b) { return a.order - b.order; });
+        message('Đã tải ' + rows.length + ' phòng họp từ Firebase.', 'success');
+      } else {
+        rows = demo.map(function (x) { return Object.assign({}, x); });
+        message('Cơ sở dữ liệu chưa có phòng. Đã điền sẵn 4 phòng mẫu; nhấn Lưu thay đổi để tạo chúng.', 'info');
+      }
+      render();
+    } catch (err) { message('Không thể tải danh sách: ' + errorText(err), 'error'); }
+    finally { setBusy(false); }
+  }
+  function nextId() {
+    return 'phong-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 100000).toString(36);
+  }
+  ui('add-room').onclick = function () {
+    if (inProgress) return;
+    syncInputs();
+    rows.push({ id: nextId(), name: 'PHÒNG HỌP ' + String(rows.length + 1).padStart(2, '0'), description: '', url: '', enabled: false, order: rows.length + 1 });
+    render();
+    window.scrollTo(0, document.body.scrollHeight);
+  };
+  ui('reload').onclick = function () {
+    if (!inProgress && confirm('Tải lại dữ liệu? Các thay đổi chưa lưu sẽ bị mất.')) loadData();
+  };
+  ui('save').onclick = async function () {
+    if (inProgress) return;
+    syncInputs();
+    if (!rows.length) { message('Cần có ít nhất 1 phòng họp.', 'error'); return; }
+    var payload = {};
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (!r.name || r.name.length > 100 || r.description.length > 250) { message('Tên hoặc mô tả phòng ' + (i + 1) + ' không hợp lệ.', 'error'); return; }
+      if (r.url && !validUrl(r.url)) { message('Link của phòng ' + (i + 1) + ' phải bắt đầu bằng https:// và không có dấu cách.', 'error'); return; }
+      if (r.enabled && !validUrl(r.url)) { message('Phòng ' + (i + 1) + ' đã bật nhưng chưa có link HTTPS hợp lệ.', 'error'); return; }
+      payload[r.id] = { name: r.name, description: r.description, url: r.url, enabled: r.enabled, order: i + 1 };
+    }
+    setBusy(true);
+    try {
+      await store.set(payload);
+      message('Đã lưu thành công ' + rows.length + ' phòng. Website công khai sẽ cập nhật trong khoảng 30 giây.', 'success');
+    } catch (err) { message('Không lưu được: ' + errorText(err), 'error'); }
+    finally { setBusy(false); }
+  };
+  ui('logout').onclick = function () { auth.signOut(); };
+  ui('login-form').onsubmit = async function (e) {
+    e.preventDefault();
+    var btn = ui('sign-in');
+    btn.disabled = true;
+    message('Đang kiểm tra tài khoản...', 'info');
+    try {
+      await auth.signInWithEmailAndPassword(ui('email').value.trim(), ui('password').value);
+      ui('password').value = '';
+    } catch (err) { message('Đăng nhập thất bại: ' + errorText(err), 'error'); }
+    finally { btn.disabled = false; }
+  };
+
+  var configured = typeof config.apiKey === 'string' && config.apiKey.indexOf('THAY_') === -1
+    && typeof config.databaseURL === 'string' && /^https:\/\//.test(config.databaseURL)
+    && config.databaseURL.indexOf('THAY_') === -1;
+  if (!configured) { show('setup'); message('Chưa cấu hình Firebase. Trang người dùng vẫn chạy từ rooms.json theo cách cũ.', 'info'); return; }
+  if (!window.firebase) { show('setup'); message('Không tải được Firebase SDK. Kiểm tra kết nối Internet hoặc chính sách chặn CDN.', 'error'); return; }
+  try {
+    firebase.initializeApp({ apiKey: config.apiKey, authDomain: config.authDomain, databaseURL: config.databaseURL,
+      projectId: config.projectId, appId: config.appId });
+    auth = firebase.auth();
+    db = firebase.database();
+    store = db.ref('rooms');
+    auth.onAuthStateChanged(function (user) {
+      if (user) {
+        hide('login'); show('editor');
+        ui('session-info').textContent = 'Đăng nhập: ' + (user.email || user.uid) + ' · Chỉ UID được ghi trong Database Rules mới được phép lưu dữ liệu.';
+        loadData();
+      } else {
+        show('login'); hide('editor');
+        message('Đăng nhập để cập nhật link cuộc họp.', 'info');
+      }
+    });
+  } catch (err) { show('setup'); message('Cấu hình Firebase không hợp lệ: ' + errorText(err), 'error'); }
+}());
+</script>
+</body>
+</html>
